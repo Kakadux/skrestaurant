@@ -110,6 +110,11 @@ input:focus{border-color:var(--red);background:white}
         <input type="password" id="s-token" placeholder="ghp_xxxxxxxxxxxx" style="flex:1">
       </div>
       <div class="cfg-row">
+        <label>PromptPay</label>
+        <input type="text" id="s-pp" placeholder="0812345678" style="flex:1">
+        <span style="font-size:.75rem;color:var(--sub)">เบอร์โทร/เลขบัตร</span>
+      </div>
+      <div class="cfg-row">
         <button class="btn btn-red" onclick="saveAndTest()">บันทึก &amp; ทดสอบ</button>
         <button class="btn btn-gray" onclick="window.print()">🖨️ พิมพ์ QR</button>
         <button class="btn btn-dark" onclick="clearOrders()">🗑️ ล้างออเดอร์ทั้งหมด</button>
@@ -136,6 +141,7 @@ function loadConfig() {
   document.getElementById('s-user').value = c.user;
   document.getElementById('s-repo').value = c.repo;
   document.getElementById('s-token').value = c.token;
+  document.getElementById('s-pp').value = localStorage.getItem('promptpay') || '';
 }
 
 function getMenuBase() {
@@ -146,7 +152,8 @@ function buildQRUrl(table) {
   const c = DB.cfg();
   const base = getMenuBase();
   const k = encodeURIComponent(btoa(c.token));
-  return `${base}/menu.html?table=${table}&u=${encodeURIComponent(c.user)}&r=${encodeURIComponent(c.repo)}&k=${k}`;
+  const pp = encodeURIComponent(localStorage.getItem('promptpay') || '');
+  return `${base}/menu.html?table=${table}&u=${encodeURIComponent(c.user)}&r=${encodeURIComponent(c.repo)}&k=${k}&pp=${pp}`;
 }
 
 function getTableStatus(tableNum) {
@@ -229,6 +236,8 @@ async function saveAndTest() {
     document.getElementById('s-repo').value.trim(),
     document.getElementById('s-token').value.trim()
   );
+  const pp = document.getElementById('s-pp').value.trim();
+  if (pp) localStorage.setItem('promptpay', pp);
   await checkAndRefresh();
 }
 
