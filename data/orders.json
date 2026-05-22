@@ -1,35 +1,5 @@
 [
   {
-    "id": "pay_1779431692045",
-    "type": "payment_claimed",
-    "table": "2",
-    "status": "pending",
-    "time": "13:34",
-    "timestamp": 1779431692045
-  },
-  {
-    "id": "ord_1779431890588",
-    "table": "2",
-    "items": [
-      {
-        "name": "น้ำเปล่า",
-        "price": 15,
-        "desc": "น้ำดื่มบรรจุขวด",
-        "emoji": "💧",
-        "wi": 20,
-        "qty": 1
-      }
-    ],
-    "subtotal": 15,
-    "serviceCharge": 2,
-    "vat": 1,
-    "total": 18,
-    "note": "",
-    "status": "pending",
-    "time": "13:38",
-    "timestamp": 1779431890590
-  },
-  {
     "id": "ord_1779431941458",
     "table": "5",
     "items": [
