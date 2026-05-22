@@ -32,5 +32,22 @@
     "status": "pending",
     "time": "11:41",
     "timestamp": 1779424894156
+  },
+  {
+    "id": "ord_1779424908086",
+    "table": "2",
+    "items": [
+      {
+        "name": "ข้าวผัดกุ้ง",
+        "price": 85,
+        "emoji": "🍤",
+        "qty": 1
+      }
+    ],
+    "total": 85,
+    "note": "",
+    "status": "pending",
+    "time": "11:41",
+    "timestamp": 1779424908088
   }
 ]
