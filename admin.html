@@ -74,11 +74,17 @@ nav a.active{color:#FF453A;border-color:#FF453A}
 .ab-pay{background:var(--green);color:white}.ab-pay:hover{background:#28A744}
 .ab-print{background:#F2F2F7;color:var(--dark)}.ab-print:hover{background:#E5E5EA}
 
-/* Bill request alert */
-.bill-alert{background:#FEE2E2;border:2px solid var(--red);border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;animation:blink .8s infinite alternate}
-@keyframes blink{from{background:#FEE2E2}to{background:#FFD0D6}}
-.bill-alert-text{flex:1;font-size:.85rem;font-weight:700;color:var(--red)}
-.ba-confirm{background:var(--red);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:.82rem;font-weight:800;cursor:pointer;white-space:nowrap}
+/* Bill / Payment alerts */
+.alert-box{border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.alert-bill{background:#FEF3C7;border:2px solid #FCD34D}
+.alert-paid{background:#D1FAE5;border:2px solid #6EE7B7;animation:blink-g .9s infinite alternate}
+@keyframes blink-g{from{background:#D1FAE5}to{background:#A7F3D0}}
+.alert-bill-text{flex:1;font-size:.83rem;font-weight:700;color:#92400E}
+.alert-paid-text{flex:1;font-size:.83rem;font-weight:700;color:#065F46}
+.alert-label{font-size:.68rem;margin-top:2px;font-weight:600;opacity:.7}
+.ba-btn{border:none;border-radius:8px;padding:8px 14px;font-size:.8rem;font-weight:800;cursor:pointer;white-space:nowrap}
+.ba-bill-btn{background:#B45309;color:white}
+.ba-paid-btn{background:var(--green);color:white}
 
 /* Sales panel */
 .summary-bar{background:var(--card);border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
@@ -206,6 +212,7 @@ async function fetchAll() {
 function getTableStatus(t) {
   const tOrders = allOrders.filter(o => String(o.table) === String(t));
   if (!tOrders.length) return 'vacant';
+  if (tOrders.some(o => o.type === 'payment_claimed')) return 'paid';
   if (tOrders.some(o => o.type === 'bill_request')) return 'bill';
   return 'busy';
 }
@@ -218,8 +225,8 @@ function renderSidebar() {
     const tOrders = allOrders.filter(o => String(o.table) === String(i) && o.type !== 'bill_request');
     const row = document.createElement('div');
     row.className = 'tbl-row' + (selectedTable == i ? ' active' : '');
-    const pillClass = st === 'vacant' ? 'tp-vacant' : st === 'bill' ? 'tp-bill' : 'tp-busy';
-    const pillText = st === 'vacant' ? 'ว่าง' : st === 'bill' ? '🔔 รอชำระ' : `${tOrders.length} ออเดอร์`;
+    const pillClass = st === 'vacant' ? 'tp-vacant' : st === 'paid' ? 'tp-bill' : st === 'bill' ? 'tp-busy' : 'tp-busy';
+    const pillText = st === 'vacant' ? 'ว่าง' : st === 'paid' ? '💰 จ่ายแล้ว' : st === 'bill' ? '🔔 ขอบิล' : `${tOrders.length} ออเดอร์`;
     row.innerHTML = `<span class="tbl-name">โต๊ะ ${i}</span><span class="tbl-pill ${pillClass}">${pillText}</span>`;
     row.onclick = () => { selectedTable = i; renderSidebar(); renderOrderPanel(); };
     list.appendChild(row);
@@ -232,11 +239,13 @@ function renderOrderPanel() {
     panel.innerHTML = '<div class="empty-panel"><div class="icon">👈</div><p>เลือกโต๊ะจากซ้ายมือ</p></div>';
     return;
   }
-  const orders = allOrders.filter(o => String(o.table) === String(selectedTable) && o.type !== 'bill_request')
+  const specialTypes = ['bill_request','payment_claimed'];
+  const orders = allOrders.filter(o => String(o.table) === String(selectedTable) && !specialTypes.includes(o.type))
     .sort((a, b) => a.timestamp - b.timestamp);
   const billReq = allOrders.find(o => String(o.table) === String(selectedTable) && o.type === 'bill_request');
+  const paidClaim = allOrders.find(o => String(o.table) === String(selectedTable) && o.type === 'payment_claimed');
 
-  if (!orders.length && !billReq) {
+  if (!orders.length && !billReq && !paidClaim) {
     panel.innerHTML = '<div class="empty-panel"><div class="icon">🍽️</div><p>ไม่มีออเดอร์ในโต๊ะนี้</p></div>';
     return;
   }
@@ -269,13 +278,23 @@ function renderOrderPanel() {
 
   panel.innerHTML = `
     <div class="panel">
-      ${billReq ? `
-        <div class="bill-alert">
-          <div>
-            <div class="bill-alert-text">🔔 โต๊ะ ${selectedTable} เรียกเก็บเงินแล้ว!</div>
-            <div style="font-size:.72rem;color:#C41E3A;margin-top:2px">${billReq.time}</div>
+      ${paidClaim ? `
+        <div class="alert-box alert-paid">
+          <div style="font-size:1.6rem">💰</div>
+          <div style="flex:1">
+            <div class="alert-paid-text">ลูกค้าโอนเงินแล้ว — รอตรวจสอบ</div>
+            <div class="alert-label" style="color:#065F46">โต๊ะ ${selectedTable} · ${paidClaim.time} · ฿${grand.toLocaleString()}</div>
           </div>
-          <button class="ba-confirm" onclick="confirmPayment()">✅ ยืนยันชำระ ฿${grand.toLocaleString()}</button>
+          <button class="ba-btn ba-paid-btn" onclick="confirmPayment()">✅ ยืนยัน</button>
+        </div>` : ''}
+      ${billReq && !paidClaim ? `
+        <div class="alert-box alert-bill">
+          <div style="font-size:1.6rem">🔔</div>
+          <div style="flex:1">
+            <div class="alert-bill-text">ลูกค้าขอบิล — ยังไม่ได้ชำระ</div>
+            <div class="alert-label" style="color:#92400E">โต๊ะ ${selectedTable} · ${billReq.time} · ฿${grand.toLocaleString()}</div>
+          </div>
+          <button class="ba-btn ba-bill-btn" onclick="confirmPayment()">รับชำระ</button>
         </div>` : ''}
 
       ${orders.map(o => `
@@ -302,7 +321,7 @@ function renderOrderPanel() {
           <div class="bill-line grand"><span>รวมสุทธิ</span><span>฿${grand.toLocaleString()}</span></div>
           <div class="action-bar">
             <button class="abtn ab-print" onclick="printBill()">🖨️ พิมพ์บิล</button>
-            ${!billReq ? `<button class="abtn ab-pay" onclick="confirmPayment()">💰 ยืนยันชำระ</button>` : ''}
+            ${!billReq && !paidClaim ? `<button class="abtn ab-pay" onclick="confirmPayment()">💰 รับชำระเงิน</button>` : ''}
           </div>
         </div>` : ''}
 
