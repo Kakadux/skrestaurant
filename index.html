@@ -3,201 +3,245 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>จัดการโต๊ะ — ระบบสั่งอาหาร</title>
+<title>จัดการโต๊ะ</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="js/db.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',sans-serif;background:#fff8f0;color:#333}
-  header{background:linear-gradient(135deg,#e84545,#c0392b);color:white;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
-  header h1{font-size:1.5rem}
-  nav{background:#2c2c2c;display:flex;gap:0}
-  nav a{color:#ccc;text-decoration:none;padding:11px 22px;font-size:.88rem;transition:background .2s}
-  nav a:hover,nav a.active{background:#e84545;color:white}
-  .container{max-width:980px;margin:28px auto;padding:0 16px}
-  .card{background:white;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:22px;margin-bottom:20px}
-  .card h2{font-size:1rem;color:#c0392b;margin-bottom:14px;font-weight:700}
-  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  input[type=text],input[type=number],input[type=password]{
-    border:1.5px solid #ddd;border-radius:8px;padding:8px 13px;font-size:.93rem;outline:none;transition:border .2s}
-  input:focus{border-color:#e84545}
-  button{border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-size:.88rem;font-weight:700;transition:background .2s}
-  .btn-red{background:#e84545;color:white}.btn-red:hover{background:#c0392b}
-  .btn-gray{background:#555;color:white}.btn-gray:hover{background:#333}
-  .btn-green{background:#27ae60;color:white}.btn-green:hover{background:#1e8449}
+:root{--red:#C41E3A;--dark:#1C1C1E;--bg:#F2F2F7;--card:#FFF;--sub:#8E8E93;--green:#34C759;--orange:#FF9500;--yellow:#FFCC00}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--dark)}
 
-  /* Status banner */
-  #status-bar{padding:10px 22px;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:8px}
-  #status-bar.ok{background:#d4edda;color:#155724}
-  #status-bar.err{background:#f8d7da;color:#721c24}
-  #status-bar.warn{background:#fff3cd;color:#856404}
-  .dot{width:9px;height:9px;border-radius:50%;background:currentColor;display:inline-block}
+header{background:var(--dark);color:white;padding:18px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.2rem;font-weight:800;letter-spacing:.3px}
+.logo span{color:#FF453A}
+header nav{display:flex;gap:6px}
+nav a{color:rgba(255,255,255,.55);text-decoration:none;font-size:.78rem;padding:6px 12px;border-radius:8px;transition:all .2s}
+nav a:hover,nav a.active{background:rgba(255,255,255,.12);color:white}
+nav a.active{color:#FF453A}
 
-  /* QR grid */
-  #qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:18px;margin-top:20px}
-  .qr-card{background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.1);padding:16px;text-align:center;border:2px solid #f0f0f0}
-  .qr-card .tlabel{font-size:1.05rem;font-weight:800;color:#c0392b;margin-bottom:10px}
-  .qr-box{display:flex;justify-content:center;margin-bottom:8px}
-  .qr-url{font-size:.62rem;color:#bbb;word-break:break-all}
+/* Status bar */
+.status-bar{padding:10px 20px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:7px}
+.status-bar.ok{background:#D1FAE5;color:#065F46}
+.status-bar.err{background:#FEE2E2;color:#991B1B}
+.status-bar.warn{background:#FEF3C7;color:#92400E}
+.status-dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
 
-  /* Settings modal */
-  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center}
-  .modal-bg.show{display:flex}
-  .modal{background:white;border-radius:16px;padding:28px;width:420px;max-width:92vw}
-  .modal h3{font-size:1.1rem;margin-bottom:18px;color:#2c3e50}
-  .form-row{margin-bottom:14px}
-  .form-row label{font-size:.83rem;color:#555;display:block;margin-bottom:4px;font-weight:600}
-  .form-row input{width:100%}
-  .help{font-size:.78rem;color:#999;margin-top:16px;line-height:1.6}
-  .help a{color:#e84545}
+.container{max-width:1000px;margin:0 auto;padding:20px 16px}
 
-  @media print{
-    header,nav,.card:not(#qr-section .card),button,#status-bar{display:none!important}
-    #qr-grid .qr-card{page-break-inside:avoid;border:1px solid #ccc}
-    body{background:white}
-  }
+/* Config card */
+.config-card{background:var(--card);border-radius:16px;padding:18px 20px;margin-bottom:18px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.config-card h2{font-size:.8rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px}
+.cfg-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cfg-row label{font-size:.82rem;color:var(--sub);min-width:60px}
+input[type=text],input[type=password]{background:#F2F2F7;border:1.5px solid transparent;border-radius:10px;padding:8px 12px;font-size:.88rem;outline:none;color:var(--dark);transition:border .2s}
+input:focus{border-color:var(--red);background:white}
+.btn{border:none;border-radius:10px;padding:9px 16px;font-size:.83rem;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-red{background:var(--red);color:white}.btn-red:hover{background:#991B1B}
+.btn-dark{background:var(--dark);color:white}.btn-dark:hover{background:#3A3A3C}
+.btn-gray{background:#E5E5EA;color:var(--dark)}.btn-gray:hover{background:#D1D1D6}
+.btn-green{background:var(--green);color:white}
+
+/* Tables section */
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.section-header h2{font-size:1rem;font-weight:800}
+.section-header small{font-size:.75rem;color:var(--sub)}
+
+.table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.tbl-card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.07);border:2px solid transparent;transition:border .3s;cursor:pointer}
+.tbl-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.tbl-card.available{border-color:#D1FAE5}
+.tbl-card.occupied{border-color:#FED7AA}
+.tbl-card.bill{border-color:#FCA5A5;animation:pulse-border 1.5s infinite}
+@keyframes pulse-border{0%,100%{border-color:#FCA5A5}50%{border-color:var(--red)}}
+
+.tbl-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.tbl-num{font-size:1.5rem;font-weight:900;color:var(--dark)}
+.status-pill{font-size:.68rem;font-weight:800;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px}
+.sp-available{background:#D1FAE5;color:#065F46}
+.sp-occupied{background:#FEF3C7;color:#92400E}
+.sp-bill{background:#FEE2E2;color:var(--red)}
+
+.qr-area{display:flex;justify-content:center;margin-bottom:10px;min-height:100px;align-items:center}
+.qr-placeholder{width:100px;height:100px;background:#F2F2F7;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#C7C7CC;font-size:.75rem;text-align:center;padding:8px}
+
+.tbl-footer{font-size:.72rem;color:var(--sub);text-align:center}
+.order-count{color:var(--red);font-weight:700}
+
+/* Print */
+@media print{
+  header,.status-bar,.config-card,.section-header .btn,body>*:not(.container){display:none!important}
+  .tbl-card{page-break-inside:avoid;box-shadow:none;border:1px solid #ddd}
+  body{background:white}
+  .tbl-footer{display:none}
+}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🍜 ร้านอาหาร Demo</h1>
-  <button class="btn-gray" onclick="openSettings()" style="font-size:.82rem">⚙️ ตั้งค่า GitHub</button>
+  <div class="logo">🍜 <span>ร้านอาหาร</span> Demo</div>
+  <nav>
+    <a href="index.html" class="active">จัดการโต๊ะ</a>
+    <a href="kitchen.html">ห้องครัว</a>
+    <a href="admin.html">แคชเชียร์</a>
+  </nav>
 </header>
 
-<div id="status-bar" class="warn"><span class="dot"></span><span id="status-msg">กำลังตรวจสอบการเชื่อมต่อ…</span></div>
-
-<nav>
-  <a href="index.html" class="active">🏠 จัดการโต๊ะ</a>
-  <a href="kitchen.html">👨‍🍳 ห้องครัว</a>
-  <a href="admin.html">🧾 แคชเชียร์</a>
-</nav>
-
-<div class="container">
-  <div class="card">
-    <h2>🪑 สร้าง QR Code ประจำโต๊ะ</h2>
-    <div class="row">
-      <label style="font-size:.88rem">จำนวนโต๊ะ:</label>
-      <input type="number" id="tableCount" value="6" min="1" max="40" style="width:90px">
-      <button class="btn-red" onclick="generateQR()">สร้าง QR Code</button>
-      <button class="btn-gray" onclick="window.print()">🖨️ พิมพ์</button>
-      <button class="btn-green" onclick="clearAllOrders()">🗑️ ล้างออเดอร์ทั้งหมด</button>
-    </div>
-  </div>
-
-  <div id="qr-section">
-    <div id="qr-grid"></div>
-  </div>
+<div class="status-bar warn" id="status-bar">
+  <span class="status-dot"></span>
+  <span id="status-msg">กำลังตรวจสอบการเชื่อมต่อ…</span>
 </div>
 
-<!-- Settings modal -->
-<div class="modal-bg" id="settings-modal">
-  <div class="modal">
-    <h3>⚙️ ตั้งค่า GitHub Storage</h3>
-    <div class="form-row">
-      <label>GitHub Username</label>
-      <input type="text" id="s-user" placeholder="your-username">
-    </div>
-    <div class="form-row">
-      <label>Repository Name</label>
-      <input type="text" id="s-repo" placeholder="restaurant-demo">
-    </div>
-    <div class="form-row">
-      <label>Personal Access Token</label>
-      <input type="password" id="s-token" placeholder="ghp_xxxxxxxxxxxx">
-    </div>
-    <div class="row" style="margin-top:18px">
-      <button class="btn-red" onclick="saveSettings()">บันทึก &amp; ทดสอบ</button>
-      <button class="btn-gray" onclick="closeSettings()">ยกเลิก</button>
-    </div>
-    <div class="help">
-      📌 วิธีสร้าง Token: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained → สร้างใหม่<br>
-      ✅ Permission ที่ต้องการ: <strong>Contents → Read &amp; Write</strong><br>
-      <a href="https://github.com/settings/tokens" target="_blank">→ ไปสร้าง Token</a>
+<div class="container">
+  <!-- GitHub Config -->
+  <div class="config-card">
+    <h2>⚙️ การตั้งค่า GitHub Storage</h2>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="cfg-row">
+        <label>Username</label>
+        <input type="text" id="s-user" placeholder="your-username" style="flex:1">
+      </div>
+      <div class="cfg-row">
+        <label>Repository</label>
+        <input type="text" id="s-repo" placeholder="restaurant-demo" style="flex:1">
+      </div>
+      <div class="cfg-row">
+        <label>Token</label>
+        <input type="password" id="s-token" placeholder="ghp_xxxxxxxxxxxx" style="flex:1">
+      </div>
+      <div class="cfg-row">
+        <button class="btn btn-red" onclick="saveAndTest()">บันทึก &amp; ทดสอบ</button>
+        <button class="btn btn-gray" onclick="window.print()">🖨️ พิมพ์ QR</button>
+        <button class="btn btn-dark" onclick="clearOrders()">🗑️ ล้างออเดอร์ทั้งหมด</button>
+      </div>
     </div>
   </div>
+
+  <!-- Tables -->
+  <div class="section-header">
+    <h2>🪑 10 โต๊ะ</h2>
+    <small id="last-sync">—</small>
+  </div>
+
+  <div class="table-grid" id="table-grid"></div>
 </div>
 
 <script>
-async function checkConnection() {
-  const bar = document.getElementById('status-bar');
-  const msg = document.getElementById('status-msg');
-  if (!DB.isReady()) {
-    bar.className = 'warn'; msg.textContent = '⚠️ ยังไม่ได้ตั้งค่า GitHub — กดปุ่ม ⚙️ ตั้งค่า GitHub ด้านบน';
-    return;
-  }
-  try {
-    await DB.getOrders();
-    bar.className = 'ok'; msg.textContent = '✅ เชื่อมต่อ GitHub สำเร็จ — ข้อมูลซิงค์ข้ามอุปกรณ์ได้แล้ว';
-  } catch(e) {
-    bar.className = 'err'; msg.textContent = `❌ เชื่อมต่อไม่ได้: ${e.message}`;
-  }
-}
+const TOTAL_TABLES = 10;
+let orders = [];
 
-function getMenuUrl(table) {
-  const c = DB.cfg();
-  const base = window.location.href.replace(/\/[^/]*$/, '');
-  // ฝัง config ใน URL เพื่อให้มือถือลูกค้าไม่ต้อง config เอง
-  const k = btoa(c.token);
-  return `${base}/menu.html?table=${table}&u=${encodeURIComponent(c.user)}&r=${encodeURIComponent(c.repo)}&k=${encodeURIComponent(k)}`;
-}
-
-function generateQR() {
-  const count = parseInt(document.getElementById('tableCount').value);
-  const grid = document.getElementById('qr-grid');
-  grid.innerHTML = '';
-
-  for (let i = 1; i <= count; i++) {
-    const url = getMenuUrl(i);
-    const card = document.createElement('div');
-    card.className = 'qr-card';
-    card.innerHTML = `
-      <div class="tlabel">🪑 โต๊ะ ${i}</div>
-      <div class="qr-box" id="qr-${i}"></div>
-      <div class="qr-url">${url.slice(0,60)}…</div>`;
-    grid.appendChild(card);
-    new QRCode(document.getElementById(`qr-${i}`), {
-      text: url, width: 140, height: 140,
-      colorDark: '#c0392b', colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
-    });
-  }
-}
-
-async function clearAllOrders() {
-  if (!DB.isReady()) return alert('กรุณาตั้งค่า GitHub ก่อน');
-  if (!confirm('ล้างออเดอร์ทั้งหมด? (ยอดขายใน sales.json จะยังคงอยู่)')) return;
-  try {
-    await DB.clearAllOrders();
-    alert('ล้างเรียบร้อย');
-  } catch(e) { alert('Error: ' + e.message); }
-}
-
-function openSettings() {
+// Load config
+function loadConfig() {
   const c = DB.cfg();
   document.getElementById('s-user').value = c.user;
   document.getElementById('s-repo').value = c.repo;
   document.getElementById('s-token').value = c.token;
-  document.getElementById('settings-modal').classList.add('show');
 }
 
-function closeSettings() {
-  document.getElementById('settings-modal').classList.remove('show');
+function getMenuBase() {
+  return window.location.href.replace(/\/[^/]*(\?.*)?$/, '');
 }
 
-async function saveSettings() {
-  const u = document.getElementById('s-user').value;
-  const r = document.getElementById('s-repo').value;
-  const t = document.getElementById('s-token').value;
-  if (!u || !r || !t) return alert('กรอกให้ครบทุกช่อง');
-  DB.saveConfig(u, r, t);
-  closeSettings();
-  await checkConnection();
-  generateQR();
+function buildQRUrl(table) {
+  const c = DB.cfg();
+  const base = getMenuBase();
+  const k = encodeURIComponent(btoa(c.token));
+  return `${base}/menu.html?table=${table}&u=${encodeURIComponent(c.user)}&r=${encodeURIComponent(c.repo)}&k=${k}`;
 }
 
-checkConnection();
-generateQR();
+function getTableStatus(tableNum) {
+  const tOrders = orders.filter(o => String(o.table) === String(tableNum));
+  if (!tOrders.length) return 'available';
+  if (tOrders.some(o => o.type === 'bill_request')) return 'bill';
+  return 'occupied';
+}
+
+function buildGrid() {
+  const grid = document.getElementById('table-grid');
+  grid.innerHTML = '';
+
+  for (let i = 1; i <= TOTAL_TABLES; i++) {
+    const status = getTableStatus(i);
+    const tOrders = orders.filter(o => String(o.table) === String(i) && o.type !== 'bill_request');
+    const hasBill = orders.some(o => String(o.table) === String(i) && o.type === 'bill_request');
+
+    const statusLabel = status === 'available' ? 'ว่าง' : status === 'bill' ? 'รอชำระ' : 'มีลูกค้า';
+    const statusClass = status === 'available' ? 'sp-available' : status === 'bill' ? 'sp-bill' : 'sp-occupied';
+
+    const card = document.createElement('div');
+    card.className = `tbl-card ${status}`;
+    card.innerHTML = `
+      <div class="tbl-top">
+        <div class="tbl-num">${i}</div>
+        <span class="status-pill ${statusClass}">${statusLabel}</span>
+      </div>
+      <div class="qr-area" id="qr-area-${i}">
+        <div class="qr-placeholder">กำลังสร้าง QR…</div>
+      </div>
+      <div class="tbl-footer">
+        ${tOrders.length > 0 ? `<span class="order-count">${tOrders.length} ออเดอร์</span>` : 'ยังไม่มีออเดอร์'}
+        ${hasBill ? '<br>🔔 เรียกเก็บเงินแล้ว!' : ''}
+      </div>`;
+    grid.appendChild(card);
+  }
+
+  // Generate QR codes (only if configured)
+  if (DB.isReady()) {
+    for (let i = 1; i <= TOTAL_TABLES; i++) {
+      const area = document.getElementById(`qr-area-${i}`);
+      area.innerHTML = '';
+      new QRCode(area, {
+        text: buildQRUrl(i),
+        width: 110, height: 110,
+        colorDark: '#1C1C1E', colorLight: '#FFFFFF',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+  }
+}
+
+async function checkAndRefresh() {
+  const bar = document.getElementById('status-bar');
+  const msg = document.getElementById('status-msg');
+
+  if (!DB.isReady()) {
+    bar.className = 'status-bar warn';
+    msg.textContent = '⚠️ กรอก GitHub settings ด้านบน แล้วกด "บันทึก & ทดสอบ"';
+    buildGrid();
+    return;
+  }
+  try {
+    orders = await DB.getOrders();
+    bar.className = 'status-bar ok';
+    msg.textContent = '✅ เชื่อมต่อ GitHub สำเร็จ — ข้อมูลซิงค์ข้ามอุปกรณ์';
+    document.getElementById('last-sync').textContent = 'ซิงค์: ' + new Date().toLocaleTimeString('th-TH');
+    buildGrid();
+  } catch(e) {
+    bar.className = 'status-bar err';
+    msg.textContent = '❌ เชื่อมต่อไม่ได้: ' + e.message;
+    buildGrid();
+  }
+}
+
+async function saveAndTest() {
+  DB.saveConfig(
+    document.getElementById('s-user').value.trim(),
+    document.getElementById('s-repo').value.trim(),
+    document.getElementById('s-token').value.trim()
+  );
+  await checkAndRefresh();
+}
+
+async function clearOrders() {
+  if (!DB.isReady()) return alert('กรุณาตั้งค่า GitHub ก่อน');
+  if (!confirm('ล้างออเดอร์ทั้งหมด? (ยอดขายใน sales.json ยังคงอยู่)')) return;
+  await DB.clearAllOrders();
+  await checkAndRefresh();
+}
+
+loadConfig();
+checkAndRefresh();
+setInterval(checkAndRefresh, 30000); // refresh every 30s
 </script>
 </body>
 </html>

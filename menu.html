@@ -3,294 +3,467 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เมนูอาหาร</title>
+<title>เมนู</title>
 <script src="js/db.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',sans-serif;background:#fff8f0;color:#333;padding-bottom:120px}
-  header{background:linear-gradient(135deg,#e84545,#c0392b);color:white;padding:14px 18px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-  header h1{font-size:1.25rem}
-  header p{font-size:.82rem;opacity:.9;margin-top:2px}
-  .cats{display:flex;overflow-x:auto;gap:8px;padding:11px 14px;background:white;border-bottom:1px solid #eee;position:sticky;top:62px;z-index:99}
-  .cats::-webkit-scrollbar{display:none}
-  .cat-btn{white-space:nowrap;border:2px solid #e84545;background:white;color:#e84545;border-radius:999px;padding:5px 15px;cursor:pointer;font-size:.83rem;font-weight:600;transition:all .2s}
-  .cat-btn.active{background:#e84545;color:white}
-  .section{padding:14px}
-  .section-title{font-size:.95rem;font-weight:700;color:#c0392b;margin-bottom:11px;padding-bottom:5px;border-bottom:2px solid #f5a5a5}
-  .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:11px;margin-bottom:22px}
-  .menu-item{background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:13px;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative}
-  .menu-item:hover{border-color:#e84545;transform:translateY(-2px)}
-  .menu-item .emoji{font-size:2rem;margin-bottom:7px}
-  .menu-item .name{font-size:.85rem;font-weight:600;margin-bottom:3px}
-  .menu-item .price{font-size:.95rem;font-weight:700;color:#e84545}
-  .menu-item .badge{position:absolute;top:8px;right:8px;background:#e84545;color:white;width:21px;height:21px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700}
-  #cart-btn{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#e84545;color:white;border:none;border-radius:999px;padding:13px 30px;font-size:.95rem;font-weight:700;box-shadow:0 4px 16px rgba(232,69,69,.5);cursor:pointer;display:none;z-index:200;min-width:230px;text-align:center}
-  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300}
-  .overlay.show{display:flex;align-items:flex-end}
-  .cart-modal{background:white;width:100%;max-height:80vh;border-radius:20px 20px 0 0;overflow-y:auto;padding:20px}
-  .cart-modal h2{font-size:1.1rem;margin-bottom:14px;color:#c0392b}
-  .cart-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f0f0}
-  .ci-name{flex:1;font-size:.88rem}
-  .ci-price{color:#e84545;font-weight:600;font-size:.88rem;min-width:62px;text-align:right}
-  .qty-ctrl{display:flex;align-items:center;gap:7px}
-  .qty-ctrl button{width:27px;height:27px;border-radius:50%;border:none;font-size:1rem;cursor:pointer;background:#f0f0f0;color:#333;display:flex;align-items:center;justify-content:center;font-weight:700}
-  .qty-ctrl button:hover{background:#e84545;color:white}
-  .qty-ctrl span{font-weight:700;min-width:18px;text-align:center}
-  .cart-total{display:flex;justify-content:space-between;font-size:1.05rem;font-weight:700;padding:14px 0 6px;border-top:2px solid #f0f0f0;margin-top:6px}
-  .note-area{margin:10px 0}
-  .note-area label{font-size:.82rem;color:#555;display:block;margin-bottom:3px}
-  .note-area textarea{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px;font-size:.88rem;resize:none;outline:none;font-family:inherit}
-  .note-area textarea:focus{border-color:#e84545}
-  .btn-row{display:flex;gap:9px;margin-top:11px}
-  .btn-row button{flex:1;border:none;border-radius:10px;padding:13px;font-size:.95rem;font-weight:700;cursor:pointer}
-  .btn-cancel{background:#eee;color:#555}
-  .btn-cancel:hover{background:#ddd}
-  .btn-order{background:#27ae60;color:white}
-  .btn-order:hover{background:#1e8449}
-  .btn-order:disabled{background:#aaa;cursor:not-allowed}
-  #success-screen{display:none;position:fixed;inset:0;background:white;z-index:500;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
-  #success-screen.show{display:flex}
-  #success-screen .big{font-size:5rem;margin-bottom:14px}
-  #success-screen h2{font-size:1.4rem;color:#27ae60;margin-bottom:7px}
-  #success-screen p{color:#777;font-size:.93rem;margin-bottom:22px}
-  #success-screen button{background:#e84545;color:white;border:none;border-radius:10px;padding:11px 30px;font-size:.95rem;font-weight:700;cursor:pointer}
-  .spinner{border:3px solid #f0f0f0;border-top-color:#e84545;border-radius:50%;width:24px;height:24px;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:10px 20px;border-radius:999px;font-size:.85rem;z-index:999;display:none}
-  .toast.show{display:block}
+:root{--red:#C41E3A;--dark:#1C1C1E;--gold:#D4A017;--bg:#F2F2F7;--card:#FFF;--sub:#8E8E93}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--dark);padding-bottom:110px}
+
+/* ─── Header ─── */
+.top-bar{background:var(--dark);color:white;padding:14px 16px 0;position:sticky;top:0;z-index:200}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.rest-name{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
+.right-top{display:flex;gap:8px;align-items:center}
+.table-chip{background:var(--red);color:white;font-size:.72rem;font-weight:800;padding:4px 12px;border-radius:999px;letter-spacing:.5px}
+.bill-btn{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 12px;font-size:.78rem;font-weight:700;cursor:pointer;display:none;transition:background .2s}
+.bill-btn:hover{background:rgba(255,255,255,.25)}
+.bill-btn.show{display:block}
+
+/* Category tabs */
+.cats{display:flex;gap:7px;overflow-x:auto;padding:0 16px 13px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat-pill{white-space:nowrap;background:rgba(255,255,255,.12);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:7px 14px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;flex-shrink:0}
+.cat-pill.active{background:var(--red);color:white}
+
+/* ─── Menu grid ─── */
+.section{padding:16px 14px 0}
+.sec-title{font-size:.82rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+
+.menu-card{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.08);position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.menu-card:active{transform:scale(.97)}
+.card-img{width:100%;height:150px;object-fit:cover;display:block;background:#eee}
+.card-img.err{display:none}
+.card-emoji-fallback{width:100%;height:150px;display:none;align-items:center;justify-content:center;font-size:3.5rem;background:linear-gradient(135deg,#ffecd2,#fcb69f)}
+.card-img.err + .card-emoji-fallback{display:flex}
+.card-body{padding:10px 11px 12px}
+.card-name{font-size:.88rem;font-weight:700;line-height:1.3;margin-bottom:3px}
+.card-desc{font-size:.72rem;color:var(--sub);line-height:1.4;margin-bottom:8px;min-height:18px}
+.card-foot{display:flex;align-items:center;justify-content:space-between}
+.card-price{font-size:1rem;font-weight:800;color:var(--red)}
+.add-btn{width:32px;height:32px;border-radius:50%;background:var(--red);color:white;border:none;font-size:1.4rem;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;flex-shrink:0}
+.add-btn:hover{background:#991B1B}
+.qty-badge{position:absolute;top:8px;right:8px;background:var(--red);color:white;min-width:22px;height:22px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;padding:0 5px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+
+/* ─── Cart FAB ─── */
+#cart-fab{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--red);color:white;border:none;border-radius:16px;padding:14px 28px;font-size:.92rem;font-weight:700;box-shadow:0 6px 20px rgba(196,30,58,.45);cursor:pointer;display:none;z-index:300;white-space:nowrap;min-width:250px;text-align:center;transition:transform .2s}
+#cart-fab:active{transform:translateX(-50%) scale(.97)}
+
+/* ─── Drawer (Cart & Bill) ─── */
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:400;backdrop-filter:blur(2px)}
+.backdrop.show{display:block}
+.drawer{position:fixed;bottom:0;left:0;right:0;background:white;border-radius:22px 22px 0 0;z-index:500;padding:20px 18px 32px;max-height:85vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.drawer.open{transform:translateY(0)}
+.drawer-handle{width:36px;height:4px;background:#E5E5EA;border-radius:999px;margin:0 auto 18px}
+.drawer-title{font-size:1.05rem;font-weight:800;margin-bottom:16px;color:var(--dark)}
+
+/* Cart items */
+.cart-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F2F2F7}
+.ci-img{width:52px;height:52px;border-radius:10px;object-fit:cover;background:#eee;flex-shrink:0}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-price{font-size:.8rem;color:var(--sub);margin-top:2px}
+.qty-ctrl{display:flex;align-items:center;gap:8px}
+.qc-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid #E5E5EA;background:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--dark)}
+.qc-btn.plus{background:var(--red);border-color:var(--red);color:white}
+.qc-qty{font-size:.9rem;font-weight:700;min-width:20px;text-align:center}
+
+.note-area{margin:14px 0}
+.note-area label{font-size:.8rem;color:var(--sub);font-weight:600;display:block;margin-bottom:5px}
+.note-area textarea{width:100%;border:1.5px solid #E5E5EA;border-radius:10px;padding:9px 12px;font-size:.88rem;resize:none;outline:none;font-family:inherit;color:var(--dark);background:#F8F8F8}
+.note-area textarea:focus{border-color:var(--red);background:white}
+
+.subtotal-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;border-top:1px solid #F2F2F7;font-size:.9rem}
+.subtotal-row strong{font-size:1.1rem;color:var(--red)}
+
+.primary-btn{width:100%;background:var(--red);color:white;border:none;border-radius:14px;padding:15px;font-size:.97rem;font-weight:800;cursor:pointer;margin-top:12px;transition:background .2s}
+.primary-btn:hover{background:#991B1B}
+.primary-btn:disabled{background:#C7C7CC;cursor:not-allowed}
+.secondary-btn{width:100%;background:#F2F2F7;color:var(--dark);border:none;border-radius:14px;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:8px}
+
+/* Bill view in drawer */
+.bill-line{display:flex;justify-content:space-between;padding:8px 0;font-size:.88rem;border-bottom:1px solid #F2F2F7}
+.bill-line:last-child{border:none}
+.bill-line.total{font-size:1.1rem;font-weight:800;color:var(--red);border-top:2px solid var(--red);padding-top:12px;margin-top:4px}
+.bill-line.tax{color:var(--sub);font-size:.8rem}
+.bill-section{margin-bottom:12px}
+.bill-section-title{font-size:.75rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+
+/* ─── Success / Requested screens ─── */
+.full-screen{display:none;position:fixed;inset:0;z-index:999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px}
+.full-screen.show{display:flex}
+#success-screen{background:white}
+#bill-sent-screen{background:var(--dark)}
+.big-icon{font-size:5rem;margin-bottom:18px}
+.full-screen h2{font-size:1.5rem;font-weight:800;margin-bottom:8px}
+#success-screen h2{color:#27ae60}
+#bill-sent-screen h2{color:white}
+.full-screen p{color:var(--sub);font-size:.93rem;margin-bottom:28px;line-height:1.6}
+#bill-sent-screen p{color:rgba(255,255,255,.6)}
+.icon-circle{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:20px}
+
+/* Spinner */
+.spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:7px}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🍜 ร้านอาหาร Demo</h1>
-  <p id="table-label">กำลังโหลด…</p>
-</header>
-<div class="cats" id="cats"></div>
+<div class="top-bar">
+  <div class="top-row">
+    <div>
+      <div class="rest-name">🍜 ร้านอาหาร Demo</div>
+    </div>
+    <div class="right-top">
+      <button class="bill-btn" id="bill-btn" onclick="openBill()">🧾 ขอบิล</button>
+      <div class="table-chip" id="table-chip">โต๊ะ —</div>
+    </div>
+  </div>
+  <div class="cats" id="cats"></div>
+</div>
+
 <div id="menu-content"></div>
 
-<button id="cart-btn" onclick="openCart()">
-  🛒 ดูตะกร้า (<span id="cart-count">0</span>) • <span id="cart-total-btn">0</span> บาท
+<button id="cart-fab" onclick="openCartDrawer()">
+  🛒 <span id="fab-count">0</span> รายการ &nbsp;·&nbsp; ฿<span id="fab-total">0</span>
 </button>
 
-<div class="overlay" id="overlay" onclick="closeCart()">
-  <div class="cart-modal" onclick="event.stopPropagation()">
-    <h2>🛒 รายการสั่ง</h2>
-    <div id="cart-list"></div>
-    <div class="cart-total">
-      <span>รวมทั้งหมด</span>
-      <span id="cart-grand-total">0 บาท</span>
-    </div>
-    <div class="note-area">
-      <label>หมายเหตุ (เช่น ไม่เผ็ด, ไม่ใส่ผัก)</label>
-      <textarea id="note" rows="2" placeholder="ระบุถ้ามี…"></textarea>
-    </div>
-    <div class="btn-row">
-      <button class="btn-cancel" onclick="closeCart()">ยกเลิก</button>
-      <button class="btn-order" id="submit-btn" onclick="submitOrder()">✅ ส่งออเดอร์</button>
-    </div>
+<!-- Cart Drawer -->
+<div class="backdrop" id="cart-backdrop" onclick="closeDrawers()"></div>
+<div class="drawer" id="cart-drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">🛒 รายการสั่ง</div>
+  <div id="cart-list"></div>
+  <div class="note-area">
+    <label>หมายเหตุ</label>
+    <textarea id="note" rows="2" placeholder="เช่น ไม่เผ็ด, ไม่ใส่ผัก…"></textarea>
+  </div>
+  <div class="subtotal-row">
+    <span>รวมทั้งหมด</span>
+    <strong id="cart-subtotal">฿0</strong>
+  </div>
+  <button class="primary-btn" id="order-btn" onclick="submitOrder()">✅ ส่งออเดอร์</button>
+  <button class="secondary-btn" onclick="closeDrawers()">ยกเลิก</button>
+</div>
+
+<!-- Bill Drawer -->
+<div class="drawer" id="bill-drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">🧾 บิลของโต๊ะ <span id="bill-table-label"></span></div>
+  <div id="bill-content">
+    <div style="text-align:center;padding:30px 0;color:var(--sub)"><span class="spinner" style="border-top-color:#999"></span> กำลังโหลด…</div>
   </div>
 </div>
 
-<div id="success-screen">
-  <div class="big">✅</div>
+<!-- Success screen -->
+<div class="full-screen" id="success-screen">
+  <div class="big-icon">✅</div>
   <h2>ส่งออเดอร์แล้ว!</h2>
   <p>ทีมงานกำลังเตรียมอาหารให้คุณ<br>กรุณารอสักครู่</p>
-  <button onclick="resetOrder()">+ สั่งเพิ่ม</button>
+  <button class="primary-btn" style="max-width:240px" onclick="resetAfterOrder()">+ สั่งเพิ่ม</button>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Bill requested screen -->
+<div class="full-screen" id="bill-sent-screen">
+  <div class="icon-circle" style="background:rgba(255,255,255,.08)">🔔</div>
+  <h2>เรียกพนักงานแล้ว</h2>
+  <p>พนักงานกำลังมาเก็บเงินให้คุณ<br>กรุณารอสักครู่</p>
+  <button class="primary-btn" style="max-width:240px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)" onclick="resetAfterBill()">กลับหน้าเมนู</button>
+</div>
 
 <script>
-// --- อ่าน config จาก URL params (ฝังมาจาก QR Code) ---
+// ── Config from QR URL ──
 const params = new URLSearchParams(location.search);
 const tableNum = params.get('table') || '?';
-const ghUser  = params.get('u') || '';
-const ghRepo  = params.get('r') || '';
-const ghKey   = params.get('k') || '';
+const ghUser = params.get('u') || '';
+const ghRepo = params.get('r') || '';
+const ghKey  = params.get('k') || '';
 
 if (ghUser && ghRepo && ghKey) {
-  try { DB.saveConfig(ghUser, ghRepo, atob(ghKey)); } catch(e) {}
+  try { DB.saveConfig(ghUser, ghRepo, atob(decodeURIComponent(ghKey))); } catch(e) {}
 }
-
-document.getElementById('table-label').textContent = `โต๊ะที่ ${tableNum}`;
+document.getElementById('table-chip').textContent = `โต๊ะ ${tableNum}`;
+document.getElementById('bill-table-label').textContent = tableNum;
 document.title = `เมนู — โต๊ะ ${tableNum}`;
 
-// --- เมนู ---
+if (!DB.isReady()) {
+  const b = document.createElement('div');
+  b.style.cssText='background:#C41E3A;color:white;text-align:center;padding:10px;font-size:.82rem;font-weight:700';
+  b.textContent='⚠️ QR Code ยังไม่ได้ตั้งค่า — ให้พนักงานสร้าง QR ใหม่';
+  document.body.prepend(b);
+}
+
+// ── Menu data ──
+function img(id){ return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=400&h=300&q=75`; }
+
 const MENU = [
   { cat:'อาหารจานหลัก', items:[
-    {name:'ข้าวผัดกุ้ง',price:85,emoji:'🍤'},
-    {name:'ข้าวผัดไก่',price:70,emoji:'🍳'},
-    {name:'ข้าวหน้าเป็ด',price:90,emoji:'🦆'},
-    {name:'ข้าวมันไก่',price:80,emoji:'🍗'},
-    {name:'ข้าวราดแกงเขียวหวาน',price:75,emoji:'🍛'},
-    {name:'ข้าวราดกะเพรา',price:70,emoji:'🌶️'},
+    { name:'ข้าวผัดกุ้ง',           price:85,  desc:'กุ้งสด ไข่ไก่ ผักสด',       emoji:'🍤', img:img('1603133872878-684f208fb84b') },
+    { name:'ข้าวราดกะเพราหมูกรอบ',  price:80,  desc:'หมูกรอบ ใบกะเพรา ไข่ดาว',   emoji:'🌶️', img:img('1562802378-063ec186a863') },
+    { name:'ข้าวมันไก่',             price:80,  desc:'ไก่นึ่งน้ำขิง ข้าวมัน',      emoji:'🍗', img:img('1547592180-85f173990554') },
+    { name:'ข้าวหน้าเป็ดพะโล้',     price:90,  desc:'เป็ดพะโล้หอมหวาน',           emoji:'🦆', img:img('1569050467447-ce54b3bbc37d') },
+    { name:'แกงเขียวหวานไก่',        price:75,  desc:'กะทิสด พริกเขียวหอม',        emoji:'🍛', img:img('1455619452474-d2be8b1e70cd') },
+    { name:'ข้าวผัดไก่',             price:70,  desc:'ไก่นุ่ม ไข่ไก่ ซอสพิเศษ',   emoji:'🍳', img:img('1512058564366-18510be2db19') },
   ]},
   { cat:'ก๋วยเตี๋ยว', items:[
-    {name:'ผัดไทยกุ้ง',price:85,emoji:'🍜'},
-    {name:'ผัดซีอิ๊ว',price:75,emoji:'🥡'},
-    {name:'ก๋วยเตี๋ยวหมูน้ำใส',price:65,emoji:'🍝'},
-    {name:'ก๋วยเตี๋ยวเนื้อ',price:85,emoji:'🥩'},
-    {name:'บะหมี่แห้งหมูแดง',price:70,emoji:'🍜'},
+    { name:'ผัดไทยกุ้ง',            price:85,  desc:'กุ้งสด เต้าหู้ ถั่วงอก',     emoji:'🍜', img:img('1559314809-0d155014e29e') },
+    { name:'ผัดซีอิ๊วหมู',          price:75,  desc:'หมูนุ่ม เส้นใหญ่ คะน้า',     emoji:'🥡', img:img('1585032226651-759b368d7246') },
+    { name:'ก๋วยเตี๋ยวหมูน้ำใส',    price:65,  desc:'น้ำซุปใส หมูสามชั้นนุ่ม',    emoji:'🍝', img:img('1569718212165-3a8278d5f624') },
+    { name:'ก๋วยเตี๋ยวเนื้อตุ๋น',  price:85,  desc:'เนื้อตุ๋นนุ่ม น้ำเข้มข้น',   emoji:'🥩', img:img('1617093727343-374698b1b08d') },
+    { name:'บะหมี่แห้งหมูแดง',      price:70,  desc:'หมูแดงหอม บะหมี่แห้งพิเศษ', emoji:'🍜', img:img('1582878826629-29b7ad1cdc43') },
   ]},
   { cat:'อาหารทะเล', items:[
-    {name:'ปลาราดพริก',price:150,emoji:'🐟'},
-    {name:'กุ้งผัดพริกแกง',price:130,emoji:'🦐'},
-    {name:'หอยลายผัดฉ่า',price:120,emoji:'🐚'},
-    {name:'ปูผัดผงกะหรี่',price:180,emoji:'🦀'},
+    { name:'กุ้งผัดพริกแกง',        price:130, desc:'กุ้งแม่น้ำ พริกแกงบ้าน',     emoji:'🦐', img:img('1565557623262-b51c2513a641') },
+    { name:'ปลาราดพริก',            price:150, desc:'ปลากะพงทอด ราดพริกสด',        emoji:'🐟', img:img('1580822184713-fc5400e7fe10') },
+    { name:'หอยลายผัดฉ่า',          price:120, desc:'หอยสด พริก ใบโหระพา',         emoji:'🐚', img:img('1604908176997-125f25cc6f3d') },
+    { name:'ปูผัดผงกะหรี่',         price:180, desc:'ปูม้าสด ผงกะหรี่นำเข้า',      emoji:'🦀', img:img('1551504734-5ee1c4a1479b') },
   ]},
   { cat:'เครื่องดื่ม', items:[
-    {name:'น้ำเปล่า',price:15,emoji:'💧'},
-    {name:'น้ำอัดลม',price:25,emoji:'🥤'},
-    {name:'ชาไทยเย็น',price:35,emoji:'🧡'},
-    {name:'กาแฟเย็น',price:45,emoji:'☕'},
-    {name:'น้ำมะนาวโซดา',price:40,emoji:'🍋'},
-    {name:'น้ำส้มคั้น',price:50,emoji:'🍊'},
+    { name:'ชาไทยเย็น',             price:35,  desc:'ชาไทยแท้ กะทิสด',             emoji:'🧡', img:img('1544787219-7f47ccb76574') },
+    { name:'กาแฟเย็น',              price:45,  desc:'กาแฟโรบัสต้า นมสด',           emoji:'☕', img:img('1509042239860-f550ce710b93') },
+    { name:'น้ำส้มคั้น',            price:50,  desc:'ส้มคั้นสด 100%',               emoji:'🍊', img:img('1622597467836-f3285f2131b8') },
+    { name:'น้ำมะนาวโซดา',          price:40,  desc:'มะนาวสด โซดา',                 emoji:'🍋', img:img('1541518763669-27ffa9e98fda') },
+    { name:'น้ำอัดลม',              price:25,  desc:'Coke / Sprite / Fanta',        emoji:'🥤', img:img('1625772299848-391b6a87d7b3') },
+    { name:'น้ำเปล่า',              price:15,  desc:'',                              emoji:'💧', img:img('1548839140-29a749e1cf4d') },
   ]},
   { cat:'ของหวาน', items:[
-    {name:'ข้าวเหนียวมะม่วง',price:65,emoji:'🥭'},
-    {name:'ไอศกรีมกะทิ',price:45,emoji:'🍨'},
-    {name:'บัวลอย',price:40,emoji:'🍡'},
-    {name:'ทับทิมกรอบ',price:45,emoji:'🔴'},
-  ]}
+    { name:'ข้าวเหนียวมะม่วง',      price:65,  desc:'มะม่วงน้ำดอกไม้ ข้าวเหนียวมูน', emoji:'🥭', img:img('1563805042-7684c019e1cb') },
+    { name:'ไอศกรีมกะทิ',           price:45,  desc:'กะทิสด ถั่วลิสง',             emoji:'🍨', img:img('1497034825429-c343d7c6a68f') },
+    { name:'บัวลอยน้ำขิง',          price:40,  desc:'บัวลอยสามสี น้ำขิงร้อน',      emoji:'🍡', img:img('1589301760014-d929f3979dbc') },
+    { name:'ทับทิมกรอบ',            price:45,  desc:'แห้วกรอบ กะทิสด น้ำแข็งใส',   emoji:'🔴', img:img('1601493700631-2b16ec4b4716') },
+  ]},
 ];
 
-let cart = {};
+// ── Cart state ──
+let cart = {}; // { name: { ...item, qty } }
+let hasOrdered = false;
 
 function buildMenu() {
-  const cats = document.getElementById('cats');
-  const content = document.getElementById('menu-content');
-  MENU.forEach((section, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (idx === 0 ? ' active' : '');
-    btn.textContent = section.cat;
-    btn.onclick = () => {
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(`sec-${idx}`).scrollIntoView({behavior:'smooth',block:'start'});
+  const catsEl = document.getElementById('cats');
+  const contentEl = document.getElementById('menu-content');
+
+  MENU.forEach((sec, idx) => {
+    // Tab
+    const pill = document.createElement('button');
+    pill.className = 'cat-pill' + (idx === 0 ? ' active' : '');
+    pill.textContent = sec.cat;
+    pill.onclick = () => {
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      document.getElementById(`sec-${idx}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-    cats.appendChild(btn);
+    catsEl.appendChild(pill);
 
-    const sec = document.createElement('div');
-    sec.className = 'section'; sec.id = `sec-${idx}`;
-    sec.innerHTML = `<div class="section-title">${section.cat}</div><div class="menu-grid" id="grid-${idx}"></div>`;
-    content.appendChild(sec);
+    // Section
+    const secEl = document.createElement('div');
+    secEl.className = 'section'; secEl.id = `sec-${idx}`;
+    secEl.innerHTML = `<div class="sec-title">${sec.cat}</div><div class="menu-grid" id="grid-${idx}"></div>`;
+    contentEl.appendChild(secEl);
 
-    section.items.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'menu-item'; div.id = `item-${item.name}`;
-      div.onclick = () => addItem(item);
-      div.innerHTML = `<div class="emoji">${item.emoji}</div><div class="name">${item.name}</div><div class="price">฿${item.price}</div>`;
-      document.getElementById(`grid-${idx}`).appendChild(div);
+    sec.items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'menu-card';
+      card.id = `card-${item.name}`;
+      card.innerHTML = `
+        <img class="card-img" src="${item.img}" alt="${item.name}"
+          onerror="this.classList.add('err')">
+        <div class="card-emoji-fallback">${item.emoji}</div>
+        <div class="card-body">
+          <div class="card-name">${item.name}</div>
+          <div class="card-desc">${item.desc}</div>
+          <div class="card-foot">
+            <span class="card-price">฿${item.price}</span>
+            <button class="add-btn" onclick="event.stopPropagation();addItem(${JSON.stringify(item).replace(/"/g,'&quot;')})">+</button>
+          </div>
+        </div>`;
+      document.getElementById(`grid-${idx}`).appendChild(card);
     });
   });
 }
 
 function addItem(item) {
-  if (cart[item.name]) cart[item.name].qty++;
-  else cart[item.name] = {...item, qty:1};
-  updateCartUI();
-  showToast(`+ ${item.emoji} ${item.name}`);
+  const k = item.name;
+  cart[k] ? cart[k].qty++ : (cart[k] = { ...item, qty: 1 });
+  updateFAB();
+  updateBadge(item.name);
 }
 
-function updateCartUI() {
-  const total = Object.values(cart).reduce((s,i) => s + i.price*i.qty, 0);
-  const count = Object.values(cart).reduce((s,i) => s + i.qty, 0);
-  document.getElementById('cart-count').textContent = count;
-  document.getElementById('cart-total-btn').textContent = total.toLocaleString();
-  document.getElementById('cart-btn').style.display = count > 0 ? 'block' : 'none';
-  Object.keys(cart).forEach(key => {
-    const el = document.getElementById(`item-${key}`);
-    if (!el) return;
-    let b = el.querySelector('.badge');
-    if (!b) { b = document.createElement('div'); b.className='badge'; el.appendChild(b); }
-    b.textContent = cart[key].qty;
-  });
+function updateFAB() {
+  const count = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+  const total = Object.values(cart).reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('fab-count').textContent = count;
+  document.getElementById('fab-total').textContent = total.toLocaleString();
+  document.getElementById('cart-fab').style.display = count > 0 ? 'block' : 'none';
 }
 
-function openCart() {
+function updateBadge(name) {
+  const card = document.getElementById(`card-${name}`);
+  if (!card) return;
+  let badge = card.querySelector('.qty-badge');
+  const qty = cart[name]?.qty || 0;
+  if (qty === 0) { badge?.remove(); return; }
+  if (!badge) { badge = document.createElement('div'); badge.className = 'qty-badge'; card.appendChild(badge); }
+  badge.textContent = qty;
+}
+
+// ── Cart drawer ──
+function openCartDrawer() {
   const list = document.getElementById('cart-list');
   list.innerHTML = '';
-  let grand = 0;
+  let total = 0;
   Object.values(cart).forEach(item => {
-    grand += item.price * item.qty;
+    total += item.price * item.qty;
     const div = document.createElement('div');
     div.className = 'cart-item';
     div.innerHTML = `
-      <span style="font-size:1.3rem">${item.emoji}</span>
-      <div class="ci-name">${item.name}</div>
-      <div class="qty-ctrl">
-        <button onclick="changeQty('${item.name}',-1)">−</button>
-        <span>${item.qty}</span>
-        <button onclick="changeQty('${item.name}',1)">+</button>
+      <img class="ci-img" src="${item.img}" alt="${item.name}" onerror="this.style.display='none'">
+      <div class="ci-info">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-price">฿${item.price} / จาน</div>
       </div>
-      <div class="ci-price">฿${(item.price*item.qty).toLocaleString()}</div>`;
+      <div class="qty-ctrl">
+        <button class="qc-btn" onclick="adjustQty('${item.name}',-1)">−</button>
+        <span class="qc-qty">${item.qty}</span>
+        <button class="qc-btn plus" onclick="adjustQty('${item.name}',1)">+</button>
+      </div>`;
     list.appendChild(div);
   });
-  document.getElementById('cart-grand-total').textContent = `${grand.toLocaleString()} บาท`;
-  document.getElementById('overlay').classList.add('show');
+  document.getElementById('cart-subtotal').textContent = `฿${total.toLocaleString()}`;
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-backdrop').classList.add('show');
 }
 
-function changeQty(name, delta) {
+function adjustQty(name, delta) {
   if (!cart[name]) return;
   cart[name].qty += delta;
-  if (cart[name].qty <= 0) {
-    delete cart[name];
-    const el = document.getElementById(`item-${name}`);
-    if (el) { const b = el.querySelector('.badge'); if (b) b.remove(); }
-  }
-  updateCartUI();
-  if (Object.keys(cart).length === 0) closeCart();
-  else openCart();
+  if (cart[name].qty <= 0) { delete cart[name]; updateBadge(name); }
+  updateFAB();
+  if (!Object.keys(cart).length) { closeDrawers(); return; }
+  openCartDrawer();
 }
 
-function closeCart() {
-  document.getElementById('overlay').classList.remove('show');
+function closeDrawers() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('bill-drawer').classList.remove('open');
+  document.getElementById('cart-backdrop').classList.remove('show');
 }
 
+// ── Submit order ──
 async function submitOrder() {
-  const items = Object.values(cart);
-  if (items.length === 0) return;
-
-  const btn = document.getElementById('submit-btn');
+  if (!Object.keys(cart).length) return;
+  if (!DB.isReady()) {
+    alert('❌ ไม่สามารถส่งออเดอร์ได้\nให้พนักงานสร้าง QR ใหม่หลังตั้งค่า GitHub แล้ว');
+    return;
+  }
+  const btn = document.getElementById('order-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>กำลังส่ง…';
 
+  const items = Object.values(cart);
   const order = {
     id: 'ord_' + Date.now(),
     table: tableNum,
     items,
-    total: items.reduce((s,i) => s + i.price*i.qty, 0),
+    total: items.reduce((s, i) => s + i.price * i.qty, 0),
     note: document.getElementById('note').value.trim(),
     status: 'pending',
-    time: new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),
+    time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
     timestamp: Date.now()
   };
 
   try {
     await DB.addOrder(order);
-    closeCart();
+    closeDrawers();
+    hasOrdered = true;
+    document.getElementById('bill-btn').classList.add('show');
     document.getElementById('success-screen').classList.add('show');
+    cart = {};
+    document.querySelectorAll('.qty-badge').forEach(b => b.remove());
+    updateFAB();
   } catch(e) {
-    alert('ส่งออเดอร์ไม่สำเร็จ: ' + e.message);
+    let msg = e.message || '';
+    if (msg.includes('401')) msg = 'Token ไม่ถูกต้องหรือหมดอายุ';
+    else if (msg.includes('403')) msg = 'Token ไม่มีสิทธิ์เขียนไฟล์ (Contents → Read & Write)';
+    else if (msg.includes('404')) msg = 'ไม่พบ repo หรือ orders.json';
+    alert('❌ ส่งออเดอร์ไม่สำเร็จ: ' + msg);
   } finally {
     btn.disabled = false;
     btn.innerHTML = '✅ ส่งออเดอร์';
   }
 }
 
-function resetOrder() {
-  cart = {};
-  document.querySelectorAll('.badge').forEach(b => b.remove());
-  updateCartUI();
-  document.getElementById('note').value = '';
+function resetAfterOrder() {
   document.getElementById('success-screen').classList.remove('show');
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1500);
+// ── Bill request ──
+async function openBill() {
+  closeDrawers();
+  const drawer = document.getElementById('bill-drawer');
+  const content = document.getElementById('bill-content');
+  content.innerHTML = '<div style="text-align:center;padding:30px;color:var(--sub)"><span class="spinner" style="border-top-color:#999"></span> กำลังโหลดบิล…</div>';
+  drawer.classList.add('open');
+  document.getElementById('cart-backdrop').classList.add('show');
+
+  try {
+    const orders = await DB.getOrders();
+    const myOrders = orders.filter(o => String(o.table) === String(tableNum) && o.status !== 'bill_request');
+    if (!myOrders.length) {
+      content.innerHTML = '<div style="text-align:center;padding:30px;color:var(--sub)">ยังไม่มีออเดอร์ในโต๊ะนี้</div>';
+      return;
+    }
+
+    const allItems = myOrders.flatMap(o => o.items);
+    const merged = {};
+    allItems.forEach(i => {
+      if (merged[i.name]) merged[i.name].qty += i.qty;
+      else merged[i.name] = { ...i };
+    });
+    const subtotal = myOrders.reduce((s, o) => s + o.total, 0);
+    const svc = Math.round(subtotal * 10 / 100);
+    const vat = Math.round((subtotal + svc) * 7 / 100);
+    const grand = subtotal + svc + vat;
+
+    content.innerHTML = `
+      <div class="bill-section">
+        <div class="bill-section-title">รายการอาหาร</div>
+        ${Object.values(merged).map(i => `
+          <div class="bill-line">
+            <span>${i.emoji} ${i.name} × ${i.qty}</span>
+            <span>฿${(i.price * i.qty).toLocaleString()}</span>
+          </div>`).join('')}
+      </div>
+      <div class="bill-line tax"><span>Service Charge 10%</span><span>฿${svc.toLocaleString()}</span></div>
+      <div class="bill-line tax"><span>VAT 7%</span><span>฿${vat.toLocaleString()}</span></div>
+      <div class="bill-line total"><span>รวมสุทธิ</span><span>฿${grand.toLocaleString()}</span></div>
+      <button class="primary-btn" onclick="requestBill()">🔔 เรียกพนักงานมาเก็บเงิน</button>
+      <button class="secondary-btn" onclick="closeDrawers()">ปิด</button>`;
+  } catch(e) {
+    content.innerHTML = `<div style="text-align:center;padding:20px;color:#C41E3A">❌ ${e.message}</div>`;
+  }
+}
+
+async function requestBill() {
+  const billRequest = {
+    id: 'bill_' + Date.now(),
+    type: 'bill_request',
+    table: tableNum,
+    status: 'pending',
+    time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+    timestamp: Date.now()
+  };
+  try {
+    await DB.addOrder(billRequest);
+    closeDrawers();
+    document.getElementById('bill-sent-screen').classList.add('show');
+  } catch(e) {
+    alert('ไม่สามารถส่งสัญญาณได้: ' + e.message);
+  }
+}
+
+function resetAfterBill() {
+  document.getElementById('bill-sent-screen').classList.remove('show');
 }
 
 buildMenu();

@@ -3,112 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>แคชเชียร์ — คิดเงิน</title>
+<title>แคชเชียร์</title>
 <script src="js/db.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;color:#333}
-  header{background:linear-gradient(135deg,#2c3e50,#34495e);color:white;padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
-  header h1{font-size:1.35rem}
-  nav{background:#2c2c2c;display:flex}
-  nav a{color:#ccc;text-decoration:none;padding:10px 20px;font-size:.86rem;transition:background .2s}
-  nav a:hover,nav a.active{background:#e84545;color:white}
-  .layout{display:flex;min-height:calc(100vh - 96px)}
-  .sidebar{width:210px;min-width:210px;background:white;border-right:1px solid #ddd;overflow-y:auto}
-  .stitle{padding:13px 15px;font-size:.8rem;font-weight:700;color:#888;text-transform:uppercase;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
-  .tbl-btn{width:100%;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;border:none;background:none;cursor:pointer;border-bottom:1px solid #f0f0f0;text-align:left;transition:background .15s;font-size:.88rem}
-  .tbl-btn:hover{background:#fff5f5}
-  .tbl-btn.active{background:#fff0f0;border-right:3px solid #e84545}
-  .pill{font-size:.7rem;padding:2px 8px;border-radius:999px;font-weight:700}
-  .pill-p{background:#ffe0e0;color:#e84545}
-  .pill-ok{background:#e0f5e9;color:#27ae60}
-  .main{flex:1;padding:18px;overflow-y:auto}
-  /* tabs in main */
-  .main-tabs{display:flex;gap:0;margin-bottom:18px;background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07)}
-  .main-tab{flex:1;padding:11px;text-align:center;cursor:pointer;font-size:.88rem;font-weight:700;color:#aaa;border:none;background:none;transition:all .2s}
-  .main-tab.active{background:#e84545;color:white}
-  /* orders */
-  .top-bar{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
-  .top-bar h2{flex:1;font-size:1.1rem;color:#c0392b}
-  button{border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:.85rem;font-weight:700;transition:background .2s}
-  .btn-red{background:#e84545;color:white}.btn-red:hover{background:#c0392b}
-  .btn-green{background:#27ae60;color:white}.btn-green:hover{background:#1e8449}
-  .btn-gray{background:#ccc;color:#333}.btn-gray:hover{background:#aaa}
-  .order-group{background:white;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:13px;overflow:hidden}
-  .og-head{display:flex;justify-content:space-between;align-items:center;padding:11px 15px;background:#fafafa;border-bottom:1px solid #eee}
-  .og-sub{font-size:.77rem;color:#999;margin-top:2px}
-  .schip{font-size:.75rem;padding:3px 9px;border-radius:999px;font-weight:700}
-  .s-p{background:#ffe0e0;color:#e84545}
-  .s-r{background:#fff3cd;color:#856404}
-  .s-d{background:#d4edda;color:#155724}
-  .o-items{padding:0 15px}
-  .o-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f8f8f8;font-size:.86rem}
-  .o-row:last-child{border:none}
-  .oqty{color:#e84545;font-weight:700;margin-right:5px}
-  .onote{margin:7px 15px;padding:5px 9px;background:#fff8e1;border-radius:6px;font-size:.78rem;color:#7d6608}
-  /* bill */
-  .bill{background:white;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.07);padding:18px;margin-top:14px}
-  .bill h3{font-size:.95rem;margin-bottom:12px;color:#2c3e50}
-  .bill-line{display:flex;justify-content:space-between;padding:5px 0;font-size:.88rem;border-bottom:1px solid #f5f5f5}
-  .bill-line.tot{font-size:1.15rem;font-weight:800;border:none;margin-top:7px;color:#c0392b;border-top:2px solid #c0392b;padding-top:11px}
-  .bill-line.sub-line{color:#999;font-size:.8rem}
-  /* sales panel */
-  .sales-card{background:white;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.07);padding:15px;margin-bottom:12px}
-  .sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-  .sc-tbl{font-size:1rem;font-weight:800;color:#27ae60}
-  .sc-meta{font-size:.77rem;color:#999}
-  .sc-total{font-size:1.1rem;font-weight:800;color:#27ae60}
-  .sc-items{font-size:.82rem;color:#777;line-height:1.7}
-  /* receipt */
-  .receipt{display:none;font-family:'Courier New',monospace;font-size:.8rem;max-width:300px;margin:14px auto 0;padding:18px;border:1px dashed #ccc;border-radius:8px;background:white}
-  .receipt.show{display:block}
-  .empty-panel{text-align:center;padding:70px 20px;color:#bbb}
-  .empty-panel .icon{font-size:3.5rem;margin-bottom:10px}
-  /* settings modal */
-  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center}
-  .modal-bg.show{display:flex}
-  .modal{background:white;border-radius:14px;padding:26px;width:400px;max-width:92vw}
-  .modal h3{font-size:1rem;margin-bottom:16px;color:#2c3e50}
-  .frow{margin-bottom:12px}
-  .frow label{font-size:.8rem;color:#555;display:block;margin-bottom:3px;font-weight:600}
-  .frow input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:8px 12px;font-size:.9rem;outline:none}
-  .frow input:focus{border-color:#e84545}
-  .mrow{display:flex;gap:8px;margin-top:16px}
-  .spinner{border:3px solid #f0f0f0;border-top-color:#e84545;border-radius:50%;width:20px;height:20px;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  @media print{header,nav,.sidebar,.main-tabs,.top-bar,.order-group,.bill .btn-row,button{display:none!important}.receipt{display:block!important;border:none}.layout{display:block}.main{padding:0}}
+:root{--red:#C41E3A;--dark:#1C1C1E;--bg:#F2F2F7;--card:#FFF;--sub:#8E8E93;--green:#34C759;--orange:#FF9500;--border:#E5E5EA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--dark)}
+
+header{background:var(--dark);color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.1rem;font-weight:800}
+.logo em{color:#FF453A;font-style:normal}
+.hright{display:flex;align-items:center;gap:10px}
+.hclock{font-size:.82rem;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums}
+.icon-btn{background:rgba(255,255,255,.1);color:white;border:none;border-radius:8px;padding:6px 11px;font-size:.8rem;cursor:pointer}
+
+nav{background:var(--dark);border-top:1px solid rgba(255,255,255,.08);display:flex}
+nav a{color:rgba(255,255,255,.45);text-decoration:none;padding:10px 18px;font-size:.8rem;transition:all .2s;border-bottom:2px solid transparent}
+nav a:hover{color:white}
+nav a.active{color:#FF453A;border-color:#FF453A}
+
+.layout{display:flex;height:calc(100vh - 89px)}
+
+/* Sidebar */
+.sidebar{width:200px;min-width:200px;background:var(--card);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.sidebar-title{padding:12px 14px;font-size:.72rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border)}
+.tbl-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #F8F8F8;cursor:pointer;transition:background .15s}
+.tbl-row:hover{background:#F8F8F8}
+.tbl-row.active{background:#FFF0F0;border-right:3px solid var(--red)}
+.tbl-name{font-size:.88rem;font-weight:700}
+.tbl-pill{font-size:.65rem;font-weight:800;padding:2px 7px;border-radius:999px}
+.tp-vacant{background:#E9F9EF;color:#1A8A3A}
+.tp-busy{background:#FEF3C7;color:#B45309}
+.tp-bill{background:#FEE2E2;color:var(--red)}
+
+/* Main */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+
+/* Tabs */
+.main-tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);padding:0 18px}
+.main-tab{padding:12px 16px;font-size:.83rem;font-weight:700;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;user-select:none}
+.main-tab.active{color:var(--red);border-color:var(--red)}
+
+.panel{padding:16px}
+
+/* Order card */
+.order-group{background:var(--card);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:11px;overflow:hidden}
+.og-head{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid #F8F8F8}
+.og-id{font-size:.8rem;font-weight:700;color:var(--dark)}
+.og-time{font-size:.72rem;color:var(--sub);margin-top:2px}
+.schip{font-size:.7rem;padding:3px 9px;border-radius:999px;font-weight:800}
+.sc-p{background:#FEE2E2;color:var(--red)}
+.sc-r{background:#FEF3C7;color:#B45309}
+.sc-d{background:#E9F9EF;color:#1A8A3A}
+.del-btn{background:#F2F2F7;border:none;border-radius:6px;padding:4px 8px;font-size:.75rem;cursor:pointer;color:var(--sub);margin-left:6px}
+.o-items{padding:0 14px}
+.o-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F8F8F8;font-size:.84rem}
+.o-row:last-child{border:none}
+.oqty{color:var(--red);font-weight:800;margin-right:5px}
+.onote{margin:7px 14px;padding:6px 9px;background:#FFFBEB;border-radius:7px;font-size:.75rem;color:#B45309}
+
+/* Bill card */
+.bill-card{background:var(--card);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:18px}
+.bill-card h3{font-size:.8rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
+.bill-line{display:flex;justify-content:space-between;padding:6px 0;font-size:.86rem;border-bottom:1px solid #F8F8F8}
+.bill-line.tax{color:var(--sub);font-size:.78rem}
+.bill-line.grand{font-size:1.15rem;font-weight:900;color:var(--red);border:none;border-top:2px solid var(--red);padding-top:12px;margin-top:4px}
+
+.action-bar{display:flex;gap:8px;margin-top:14px}
+.abtn{flex:1;border:none;border-radius:10px;padding:13px;font-size:.88rem;font-weight:800;cursor:pointer;transition:background .2s}
+.ab-pay{background:var(--green);color:white}.ab-pay:hover{background:#28A744}
+.ab-print{background:#F2F2F7;color:var(--dark)}.ab-print:hover{background:#E5E5EA}
+
+/* Bill request alert */
+.bill-alert{background:#FEE2E2;border:2px solid var(--red);border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;animation:blink .8s infinite alternate}
+@keyframes blink{from{background:#FEE2E2}to{background:#FFD0D6}}
+.bill-alert-text{flex:1;font-size:.85rem;font-weight:700;color:var(--red)}
+.ba-confirm{background:var(--red);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:.82rem;font-weight:800;cursor:pointer;white-space:nowrap}
+
+/* Sales panel */
+.summary-bar{background:var(--card);border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.summary-total{font-size:2rem;font-weight:900;color:var(--green)}
+.summary-sub{font-size:.8rem;color:var(--sub);margin-top:3px}
+.sale-card{background:var(--card);border-radius:10px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.sc-tbl{font-size:.95rem;font-weight:800;color:var(--dark)}
+.sc-paid{font-size:.7rem;color:var(--sub);margin-top:2px}
+.sc-amount{font-size:1.1rem;font-weight:800;color:var(--green)}
+.sc-items{font-size:.78rem;color:var(--sub);line-height:1.7;margin-top:6px;padding-top:6px;border-top:1px solid #F8F8F8}
+
+/* Empty */
+.empty-panel{text-align:center;padding:70px 20px;color:var(--sub)}
+.empty-panel .icon{font-size:3.5rem;margin-bottom:10px}
+
+/* Receipt for print */
+.receipt{display:none;font-family:'Courier New',monospace;font-size:.8rem;max-width:300px;margin:14px auto 0;padding:18px;border:1px dashed #ccc;border-radius:8px;background:white}
+.receipt.show{display:block}
+
+/* Settings */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal-bg.show{display:flex}
+.modal{background:white;border-radius:16px;padding:24px;width:380px;max-width:94vw}
+.modal h3{font-size:.95rem;font-weight:800;margin-bottom:16px}
+.frow{margin-bottom:11px}
+.frow label{font-size:.78rem;color:var(--sub);display:block;margin-bottom:4px;font-weight:700}
+.frow input{width:100%;background:#F2F2F7;border:1.5px solid transparent;border-radius:9px;padding:8px 12px;font-size:.88rem;outline:none}
+.frow input:focus{border-color:var(--red);background:white}
+.mrow{display:flex;gap:8px;margin-top:14px}
+.mrow button{flex:1;border:none;border-radius:9px;padding:10px;font-size:.85rem;font-weight:700;cursor:pointer}
+
+/* Spinner */
+.spinner{width:18px;height:18px;border:2px solid #F0F0F0;border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media print{header,nav,.sidebar,.main-tabs,.action-bar,button,.bill-card h3{display:none!important}.receipt{display:block!important;border:none}.layout{display:block}.main{padding:0;height:auto}.panel{padding:0}}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🧾 แคชเชียร์</h1>
-  <div style="display:flex;gap:10px;align-items:center">
-    <span id="hclock" style="font-size:.82rem;opacity:.75"></span>
-    <button onclick="openSettings()" style="background:rgba(255,255,255,.2);color:white;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-size:.8rem">⚙️ GitHub</button>
+  <div class="logo"><em>🧾</em> แคชเชียร์</div>
+  <div class="hright">
+    <span class="hclock" id="hclock"></span>
+    <button class="icon-btn" onclick="fetchAll()">↺ รีเฟรช</button>
+    <button class="icon-btn" onclick="openSettings()">⚙️</button>
   </div>
 </header>
 
 <nav>
-  <a href="index.html">🏠 จัดการโต๊ะ</a>
-  <a href="kitchen.html">👨‍🍳 ห้องครัว</a>
-  <a href="admin.html" class="active">🧾 แคชเชียร์</a>
+  <a href="index.html">จัดการโต๊ะ</a>
+  <a href="kitchen.html">ห้องครัว</a>
+  <a href="admin.html" class="active">แคชเชียร์</a>
 </nav>
 
 <div class="layout">
+  <!-- Sidebar: 10 fixed tables -->
   <div class="sidebar">
-    <div class="stitle">
-      <span>โต๊ะทั้งหมด</span>
-      <button onclick="fetchAll()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#e84545" title="รีเฟรช">↺</button>
-    </div>
-    <div id="table-list"><div style="padding:20px;color:#bbb;font-size:.83rem;text-align:center">กำลังโหลด…</div></div>
+    <div class="sidebar-title">10 โต๊ะ</div>
+    <div id="table-list"></div>
   </div>
 
+  <!-- Main panel -->
   <div class="main">
     <div class="main-tabs">
-      <button class="main-tab active" onclick="setMainTab('orders',this)">📋 ออเดอร์โต๊ะ</button>
-      <button class="main-tab" onclick="setMainTab('sales',this)">💰 ประวัติยอดขาย</button>
+      <div class="main-tab active" onclick="setMainTab('orders',this)">📋 ออเดอร์</div>
+      <div class="main-tab" onclick="setMainTab('sales',this)">💰 ยอดขาย</div>
     </div>
+
     <div id="orders-panel">
       <div class="empty-panel"><div class="icon">👈</div><p>เลือกโต๊ะจากซ้ายมือ</p></div>
     </div>
@@ -116,169 +156,173 @@
   </div>
 </div>
 
-<!-- Settings modal -->
+<!-- Settings -->
 <div class="modal-bg" id="settings-modal">
   <div class="modal">
-    <h3>⚙️ ตั้งค่า GitHub Storage</h3>
+    <h3>⚙️ GitHub Settings</h3>
     <div class="frow"><label>GitHub Username</label><input type="text" id="s-user"></div>
     <div class="frow"><label>Repository Name</label><input type="text" id="s-repo"></div>
     <div class="frow"><label>Personal Access Token</label><input type="password" id="s-token"></div>
     <div class="mrow">
-      <button onclick="saveSettings()" class="btn-red">บันทึก &amp; ทดสอบ</button>
-      <button onclick="document.getElementById('settings-modal').classList.remove('show')" class="btn-gray">ยกเลิก</button>
+      <button onclick="saveSettings()" style="background:var(--red);color:white">บันทึก</button>
+      <button onclick="closeSettings()" style="background:#F2F2F7;color:var(--dark)">ยกเลิก</button>
     </div>
   </div>
 </div>
 
 <script>
+const TOTAL = 10;
 let selectedTable = null;
 let mainTab = 'orders';
 let allOrders = [];
-const VAT = 7, SVC = 10;
 
-// --- Tabs ---
+// ── Main tab ──
 function setMainTab(tab, el) {
   mainTab = tab;
   document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('orders-panel').style.display = tab==='orders' ? 'block' : 'none';
-  document.getElementById('sales-panel').style.display = tab==='sales' ? 'block' : 'none';
-  if (tab==='sales') renderSales();
+  document.getElementById('orders-panel').style.display = tab === 'orders' ? '' : 'none';
+  document.getElementById('sales-panel').style.display = tab === 'sales' ? '' : 'none';
+  if (tab === 'sales') renderSales();
 }
 
-// --- Fetch ---
+// ── Fetch & render ──
 async function fetchAll() {
   if (!DB.isReady()) {
     document.getElementById('table-list').innerHTML =
-      '<div style="padding:16px;color:#e84545;font-size:.82rem">⚠️ ยังไม่ได้ตั้งค่า GitHub</div>';
+      '<div style="padding:14px;color:var(--red);font-size:.8rem">⚠️ ยังไม่ได้ตั้งค่า GitHub</div>';
     return;
   }
   try {
     allOrders = await DB.getOrders();
     renderSidebar();
-    if (selectedTable) renderOrderPanel();
+    if (selectedTable !== null) renderOrderPanel();
   } catch(e) {
     document.getElementById('table-list').innerHTML =
-      `<div style="padding:14px;color:#e84545;font-size:.8rem">❌ ${e.message}</div>`;
+      `<div style="padding:14px;color:var(--red);font-size:.8rem">❌ ${e.message}</div>`;
   }
 }
 
-function getTables() {
-  const map = {};
-  allOrders.forEach(o => {
-    if (!map[o.table]) map[o.table] = {table: o.table, orders:[], pending:0};
-    map[o.table].orders.push(o);
-    if (o.status !== 'done') map[o.table].pending++;
-  });
-  return Object.values(map).sort((a,b) => +a.table - +b.table);
+function getTableStatus(t) {
+  const tOrders = allOrders.filter(o => String(o.table) === String(t));
+  if (!tOrders.length) return 'vacant';
+  if (tOrders.some(o => o.type === 'bill_request')) return 'bill';
+  return 'busy';
 }
 
 function renderSidebar() {
-  const tables = getTables();
   const list = document.getElementById('table-list');
   list.innerHTML = '';
-  if (!tables.length) {
-    list.innerHTML = '<div style="padding:18px;color:#bbb;font-size:.83rem;text-align:center">ยังไม่มีออเดอร์</div>';
-    return;
+  for (let i = 1; i <= TOTAL; i++) {
+    const st = getTableStatus(i);
+    const tOrders = allOrders.filter(o => String(o.table) === String(i) && o.type !== 'bill_request');
+    const row = document.createElement('div');
+    row.className = 'tbl-row' + (selectedTable == i ? ' active' : '');
+    const pillClass = st === 'vacant' ? 'tp-vacant' : st === 'bill' ? 'tp-bill' : 'tp-busy';
+    const pillText = st === 'vacant' ? 'ว่าง' : st === 'bill' ? '🔔 รอชำระ' : `${tOrders.length} ออเดอร์`;
+    row.innerHTML = `<span class="tbl-name">โต๊ะ ${i}</span><span class="tbl-pill ${pillClass}">${pillText}</span>`;
+    row.onclick = () => { selectedTable = i; renderSidebar(); renderOrderPanel(); };
+    list.appendChild(row);
   }
-  tables.forEach(t => {
-    const btn = document.createElement('button');
-    btn.className = 'tbl-btn' + (selectedTable==t.table?' active':'');
-    btn.innerHTML = `<span style="font-weight:700">🪑 โต๊ะ ${t.table}</span>
-      <span class="pill ${t.pending>0?'pill-p':'pill-ok'}">${t.pending>0?`${t.pending} รอ`:'พร้อม'}</span>`;
-    btn.onclick = () => { selectedTable = t.table; renderSidebar(); renderOrderPanel(); };
-    list.appendChild(btn);
-  });
 }
 
 function renderOrderPanel() {
   const panel = document.getElementById('orders-panel');
-  if (!selectedTable) {
+  if (selectedTable === null) {
     panel.innerHTML = '<div class="empty-panel"><div class="icon">👈</div><p>เลือกโต๊ะจากซ้ายมือ</p></div>';
     return;
   }
-  const orders = allOrders.filter(o => String(o.table)===String(selectedTable))
-    .sort((a,b) => a.timestamp - b.timestamp);
-  if (!orders.length) {
+  const orders = allOrders.filter(o => String(o.table) === String(selectedTable) && o.type !== 'bill_request')
+    .sort((a, b) => a.timestamp - b.timestamp);
+  const billReq = allOrders.find(o => String(o.table) === String(selectedTable) && o.type === 'bill_request');
+
+  if (!orders.length && !billReq) {
     panel.innerHTML = '<div class="empty-panel"><div class="icon">🍽️</div><p>ไม่มีออเดอร์ในโต๊ะนี้</p></div>';
     return;
   }
 
-  const subtotal = orders.reduce((s,o) => s+o.total, 0);
-  const svc = Math.round(subtotal*SVC/100);
-  const vat = Math.round((subtotal+svc)*VAT/100);
+  const subtotal = orders.reduce((s, o) => s + (o.total || 0), 0);
+  const svc = Math.round(subtotal * 10 / 100);
+  const vat = Math.round((subtotal + svc) * 7 / 100);
   const grand = subtotal + svc + vat;
 
-  const sMap = {pending:'รอทำ', preparing:'กำลังทำ', done:'เสร็จแล้ว'};
-  const cMap = {pending:'s-p', preparing:'s-r', done:'s-d'};
+  const sMap = { pending: 'รอทำ', preparing: 'กำลังทำ', done: 'เสร็จแล้ว' };
+  const cMap = { pending: 'sc-p', preparing: 'sc-r', done: 'sc-d' };
 
-  const receipt = [
+  const receiptLines = [
     `===== ร้านอาหาร Demo =====`,
     `โต๊ะ: ${selectedTable}`,
     `วันที่: ${new Date().toLocaleString('th-TH')}`,
     `--------------------------`,
-    ...orders.flatMap(o => o.items.map(i =>
-      `${i.emoji} ${i.name} x${i.qty}`.padEnd(22) + `${(i.price*i.qty).toLocaleString().padStart(6)} บ.`
+    ...orders.flatMap(o => (o.items||[]).map(i =>
+      `${i.name} ×${i.qty}`.padEnd(22) + `฿${(i.price*i.qty).toLocaleString().padStart(6)}`
     )),
     `--------------------------`,
-    `อาหาร`.padEnd(22) + `${subtotal.toLocaleString().padStart(6)} บ.`,
-    `Service ${SVC}%`.padEnd(22) + `${svc.toLocaleString().padStart(6)} บ.`,
-    `VAT ${VAT}%`.padEnd(22) + `${vat.toLocaleString().padStart(6)} บ.`,
+    `อาหาร`.padEnd(22) + `฿${subtotal.toLocaleString().padStart(6)}`,
+    `Service 10%`.padEnd(22) + `฿${svc.toLocaleString().padStart(6)}`,
+    `VAT 7%`.padEnd(22) + `฿${vat.toLocaleString().padStart(6)}`,
     `==========================`,
-    `รวมสุทธิ`.padEnd(20) + `${grand.toLocaleString().padStart(8)} บ.`,
+    `รวมสุทธิ`.padEnd(20) + `฿${grand.toLocaleString().padStart(8)}`,
     `==========================`,
     `ขอบคุณที่ใช้บริการ 🙏`,
   ].join('\n');
 
   panel.innerHTML = `
-    <div class="top-bar">
-      <h2>🪑 โต๊ะ ${selectedTable}</h2>
-      <button class="btn-gray" onclick="printBill()">🖨️ พิมพ์บิล</button>
-      <button class="btn-green" onclick="checkout()">💰 ชำระแล้ว</button>
-    </div>
-    ${orders.map(o=>`
-      <div class="order-group">
-        <div class="og-head">
+    <div class="panel">
+      ${billReq ? `
+        <div class="bill-alert">
           <div>
-            <div style="font-weight:700;font-size:.88rem">ออเดอร์ ${o.id.slice(-6)}</div>
-            <div class="og-sub">${o.time}</div>
+            <div class="bill-alert-text">🔔 โต๊ะ ${selectedTable} เรียกเก็บเงินแล้ว!</div>
+            <div style="font-size:.72rem;color:#C41E3A;margin-top:2px">${billReq.time}</div>
           </div>
-          <div style="display:flex;gap:7px;align-items:center">
-            <span class="schip ${cMap[o.status]}">${sMap[o.status]}</span>
-            <button class="btn-gray" style="padding:4px 9px;font-size:.75rem" onclick="delOrder('${o.id}')">✕</button>
+          <button class="ba-confirm" onclick="confirmPayment()">✅ ยืนยันชำระ ฿${grand.toLocaleString()}</button>
+        </div>` : ''}
+
+      ${orders.map(o => `
+        <div class="order-group">
+          <div class="og-head">
+            <div><div class="og-id">ออเดอร์ …${o.id.slice(-6)}</div><div class="og-time">${o.time}</div></div>
+            <div style="display:flex;align-items:center">
+              <span class="schip ${cMap[o.status]}">${sMap[o.status]}</span>
+              <button class="del-btn" onclick="delOrder('${o.id}')">✕</button>
+            </div>
           </div>
-        </div>
-        <div class="o-items">
-          ${o.items.map(i=>`<div class="o-row"><span><span class="oqty">x${i.qty}</span>${i.emoji} ${i.name}</span><span style="color:#999">฿${(i.price*i.qty).toLocaleString()}</span></div>`).join('')}
-        </div>
-        ${o.note?`<div class="onote">📝 ${o.note}</div>`:''}
-      </div>`).join('')}
-    <div class="bill">
-      <h3>🧾 สรุปบิล</h3>
-      <div class="bill-line"><span>ค่าอาหาร</span><span>฿${subtotal.toLocaleString()}</span></div>
-      <div class="bill-line sub-line"><span>Service Charge ${SVC}%</span><span>฿${svc.toLocaleString()}</span></div>
-      <div class="bill-line sub-line"><span>VAT ${VAT}%</span><span>฿${vat.toLocaleString()}</span></div>
-      <div class="bill-line tot"><span>รวมสุทธิ</span><span>฿${grand.toLocaleString()}</span></div>
-    </div>
-    <div class="receipt" id="receipt-box"><pre>${receipt}</pre></div>`;
+          <div class="o-items">
+            ${(o.items||[]).map(i => `<div class="o-row"><span><span class="oqty">×${i.qty}</span>${i.emoji||''} ${i.name}</span><span style="color:var(--sub)">฿${(i.price*i.qty).toLocaleString()}</span></div>`).join('')}
+          </div>
+          ${o.note ? `<div class="onote">📝 ${o.note}</div>` : ''}
+        </div>`).join('')}
+
+      ${orders.length ? `
+        <div class="bill-card">
+          <h3>🧾 สรุปบิล — โต๊ะ ${selectedTable}</h3>
+          <div class="bill-line"><span>ค่าอาหาร</span><span>฿${subtotal.toLocaleString()}</span></div>
+          <div class="bill-line tax"><span>Service Charge 10%</span><span>฿${svc.toLocaleString()}</span></div>
+          <div class="bill-line tax"><span>VAT 7%</span><span>฿${vat.toLocaleString()}</span></div>
+          <div class="bill-line grand"><span>รวมสุทธิ</span><span>฿${grand.toLocaleString()}</span></div>
+          <div class="action-bar">
+            <button class="abtn ab-print" onclick="printBill()">🖨️ พิมพ์บิล</button>
+            ${!billReq ? `<button class="abtn ab-pay" onclick="confirmPayment()">💰 ยืนยันชำระ</button>` : ''}
+          </div>
+        </div>` : ''}
+
+      <div class="receipt" id="receipt-box"><pre>${receiptLines}</pre></div>
+    </div>`;
 }
 
-async function checkout() {
-  if (!confirm(`ยืนยันรับชำระเงินโต๊ะ ${selectedTable}?\nออเดอร์จะย้ายไป ประวัติยอดขาย`)) return;
+async function confirmPayment() {
+  if (!confirm(`ยืนยันรับชำระเงินโต๊ะ ${selectedTable}?\nออเดอร์จะถูกย้ายไปยังประวัติยอดขาย`)) return;
   try {
     await DB.checkoutTable(selectedTable);
     selectedTable = null;
     await fetchAll();
-    alert('ชำระเงินสำเร็จ ✅ บันทึกยอดขายแล้ว');
+    alert('✅ ชำระเงินสำเร็จ — บันทึกลง sales.json แล้ว');
   } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function delOrder(id) {
   if (!confirm('ลบออเดอร์นี้?')) return;
-  try {
-    await DB.deleteOrder(id);
-    await fetchAll();
-  } catch(e) { alert('Error: ' + e.message); }
+  try { await DB.deleteOrder(id); await fetchAll(); } catch(e) { alert(e.message); }
 }
 
 function printBill() {
@@ -286,46 +330,45 @@ function printBill() {
   if (r) { r.classList.add('show'); window.print(); r.classList.remove('show'); }
 }
 
-// --- Sales panel ---
+// ── Sales panel ──
 async function renderSales() {
   const panel = document.getElementById('sales-panel');
-  panel.innerHTML = '<div style="padding:20px;text-align:center"><span class="spinner"></span> กำลังโหลด…</div>';
-  if (!DB.isReady()) { panel.innerHTML = '<div style="padding:20px;color:#e84545">⚠️ ยังไม่ได้ตั้งค่า GitHub</div>'; return; }
+  panel.innerHTML = '<div style="padding:24px;text-align:center"><span class="spinner"></span></div>';
+  if (!DB.isReady()) { panel.innerHTML = '<div style="padding:20px;color:var(--red)">⚠️ ยังไม่ได้ตั้งค่า</div>'; return; }
   try {
     const sales = await DB.getSales();
     if (!sales.length) {
       panel.innerHTML = '<div class="empty-panel"><div class="icon">💰</div><p>ยังไม่มีประวัติยอดขาย</p></div>';
       return;
     }
-    const totalAll = sales.reduce((s,x) => s+x.total, 0);
-    const sorted = [...sales].sort((a,b) => b.timestamp - a.timestamp);
+    const grandTotal = sales.reduce((s, x) => s + (x.total || 0), 0);
+    const sorted = [...sales].sort((a, b) => b.timestamp - a.timestamp);
     panel.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-        <div>
-          <div style="font-size:.8rem;color:#999">ยอดขายรวมทั้งหมด</div>
-          <div style="font-size:1.5rem;font-weight:800;color:#27ae60">฿${totalAll.toLocaleString()}</div>
+      <div class="panel">
+        <div class="summary-bar">
+          <div class="summary-total">฿${grandTotal.toLocaleString()}</div>
+          <div class="summary-sub">รายได้รวมทั้งหมด · ${sales.length} session · ${sales.reduce((s,x)=>s+(x.orders||[]).length,0)} ออเดอร์</div>
         </div>
-        <div style="font-size:.82rem;color:#999">${sales.length} session</div>
-      </div>
-      ${sorted.map(s => `
-        <div class="sales-card">
-          <div class="sc-head">
-            <div>
-              <div class="sc-tbl">🪑 โต๊ะ ${s.table}</div>
-              <div class="sc-meta">${s.paidAt} · ${s.orders.length} ออเดอร์</div>
+        ${sorted.map(s => `
+          <div class="sale-card">
+            <div class="sc-head">
+              <div>
+                <div class="sc-tbl">🪑 โต๊ะ ${s.table}</div>
+                <div class="sc-paid">${s.paidAt} · ${(s.orders||[]).length} ออเดอร์</div>
+              </div>
+              <div class="sc-amount">฿${(s.total||0).toLocaleString()}</div>
             </div>
-            <div class="sc-total">฿${s.total.toLocaleString()}</div>
-          </div>
-          <div class="sc-items">
-            ${s.orders.flatMap(o=>o.items).map(i=>`${i.emoji} ${i.name} x${i.qty}`).join(' · ')}
-          </div>
-        </div>`).join('')}`;
+            <div class="sc-items">
+              ${(s.orders||[]).flatMap(o=>(o.items||[]).map(i=>`${i.emoji||''}${i.name} ×${i.qty}`)).join(' · ')}
+            </div>
+          </div>`).join('')}
+      </div>`;
   } catch(e) {
-    panel.innerHTML = `<div style="padding:20px;color:#e84545">❌ ${e.message}</div>`;
+    panel.innerHTML = `<div style="padding:20px;color:var(--red)">❌ ${e.message}</div>`;
   }
 }
 
-// --- Settings ---
+// ── Settings ──
 function openSettings() {
   const c = DB.cfg();
   document.getElementById('s-user').value = c.user;
@@ -333,23 +376,17 @@ function openSettings() {
   document.getElementById('s-token').value = c.token;
   document.getElementById('settings-modal').classList.add('show');
 }
-
+function closeSettings() { document.getElementById('settings-modal').classList.remove('show'); }
 async function saveSettings() {
-  DB.saveConfig(
-    document.getElementById('s-user').value,
-    document.getElementById('s-repo').value,
-    document.getElementById('s-token').value
-  );
-  document.getElementById('settings-modal').classList.remove('show');
+  DB.saveConfig(document.getElementById('s-user').value, document.getElementById('s-repo').value, document.getElementById('s-token').value);
+  closeSettings();
   await fetchAll();
 }
 
 // Clock
-setInterval(() => {
-  document.getElementById('hclock').textContent = new Date().toLocaleTimeString('th-TH');
-}, 1000);
+setInterval(() => { document.getElementById('hclock').textContent = new Date().toLocaleTimeString('th-TH'); }, 1000);
+document.getElementById('hclock').textContent = new Date().toLocaleTimeString('th-TH');
 
-// Auto refresh every 8s
 fetchAll();
 setInterval(fetchAll, 8000);
 </script>
