@@ -44,5 +44,24 @@
     "status": "pending",
     "time": "13:27",
     "timestamp": 1779431251142
+  },
+  {
+    "id": "ord_1779431414910",
+    "table": "2",
+    "items": [
+      {
+        "name": "ข้าวผัดกุ้ง",
+        "price": 85,
+        "desc": "กุ้งสด ไข่ไก่ ผักสด",
+        "emoji": "🍤",
+        "img": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=400&h=300&q=75",
+        "qty": 1
+      }
+    ],
+    "total": 85,
+    "note": "",
+    "status": "pending",
+    "time": "13:30",
+    "timestamp": 1779431414912
   }
 ]
