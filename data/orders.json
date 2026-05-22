@@ -38,14 +38,6 @@
     "timestamp": 1779431242023
   },
   {
-    "id": "bill_1779431251141",
-    "type": "bill_request",
-    "table": "3",
-    "status": "pending",
-    "time": "13:27",
-    "timestamp": 1779431251142
-  },
-  {
     "id": "ord_1779431414910",
     "table": "2",
     "items": [
