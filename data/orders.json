@@ -17,5 +17,24 @@
     "status": "pending",
     "time": "13:27",
     "timestamp": 1779431232935
+  },
+  {
+    "id": "ord_1779431242022",
+    "table": "3",
+    "items": [
+      {
+        "name": "แกงเขียวหวานไก่",
+        "price": 75,
+        "desc": "กะทิสด พริกเขียวหอม",
+        "emoji": "🍛",
+        "img": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=400&h=300&q=75",
+        "qty": 1
+      }
+    ],
+    "total": 75,
+    "note": "",
+    "status": "pending",
+    "time": "13:27",
+    "timestamp": 1779431242023
   }
 ]
