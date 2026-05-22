@@ -28,5 +28,13 @@
     "status": "pending",
     "time": "13:34",
     "timestamp": 1779431678764
+  },
+  {
+    "id": "pay_1779431692045",
+    "type": "payment_claimed",
+    "table": "2",
+    "status": "pending",
+    "time": "13:34",
+    "timestamp": 1779431692045
   }
 ]
