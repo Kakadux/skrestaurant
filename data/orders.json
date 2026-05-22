@@ -33,13 +33,5 @@
     "status": "pending",
     "time": "11:56",
     "timestamp": 1779425803059
-  },
-  {
-    "id": "bill_1779425841816",
-    "type": "bill_request",
-    "table": "1",
-    "status": "pending",
-    "time": "11:57",
-    "timestamp": 1779425841816
   }
 ]
