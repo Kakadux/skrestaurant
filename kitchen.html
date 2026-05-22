@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ห้องครัว — จอออเดอร์</title>
+<script src="js/db.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#1a1a2e;color:#eee;min-height:100vh}
+  header{background:#16213e;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #e84545}
+  header h1{font-size:1.3rem;color:#e84545}
+  .header-right{display:flex;align-items:center;gap:16px}
+  .clock{font-size:1rem;font-weight:700;color:#ffd700}
+  .dot{width:9px;height:9px;border-radius:50%;background:#27ae60;animation:pulse 1.5s infinite;display:inline-block;margin-right:5px}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+  nav{background:#0f3460;display:flex}
+  nav a{color:#aaa;text-decoration:none;padding:10px 20px;font-size:.85rem;transition:background .2s}
+  nav a:hover,nav a.active{background:#e84545;color:white}
+  .tabs{display:flex;background:#16213e;border-bottom:1px solid #333;padding:0 14px}
+  .tab{padding:11px 18px;cursor:pointer;font-size:.88rem;border-bottom:3px solid transparent;color:#aaa;transition:all .2s;user-select:none}
+  .tab.active{color:#e84545;border-color:#e84545;font-weight:700}
+  .counters{background:#16213e;padding:9px 20px;display:flex;gap:22px;border-bottom:1px solid #333;font-size:.83rem}
+  .c-p{color:#e84545}.c-r{color:#f39c12}.c-d{color:#27ae60}
+  .counters strong{font-size:1.15rem;margin-right:3px}
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;padding:18px}
+  .order-card{background:#16213e;border-radius:12px;border-left:5px solid #e84545;padding:15px;animation:slideIn .3s ease}
+  .order-card.preparing{border-color:#f39c12}
+  .order-card.done{border-color:#27ae60;opacity:.55}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+  .tbl{background:#e84545;color:white;font-size:1rem;font-weight:800;padding:4px 13px;border-radius:999px}
+  .order-card.preparing .tbl{background:#f39c12}
+  .order-card.done .tbl{background:#27ae60}
+  .otime{font-size:.77rem;color:#888}
+  .item-list{margin-bottom:11px}
+  .irow{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #2a2a4a;font-size:.85rem}
+  .irow:last-child{border:none}
+  .iqty{background:#e84545;color:white;font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:999px;margin-right:5px}
+  .note{background:#0f3460;border-radius:6px;padding:5px 9px;font-size:.78rem;color:#ffd700;margin-bottom:9px}
+  .acts{display:flex;gap:7px}
+  .acts button{flex:1;border:none;border-radius:7px;padding:8px;font-size:.82rem;font-weight:700;cursor:pointer}
+  .btn-prep{background:#f39c12;color:white}
+  .btn-prep:hover{background:#d68910}
+  .btn-done{background:#27ae60;color:white}
+  .btn-done:hover{background:#1e8449}
+  .btn-del{background:#444;color:#ccc}
+  .btn-del:hover{background:#333}
+  .empty{text-align:center;padding:70px 20px;color:#555;grid-column:1/-1}
+  .empty .icon{font-size:3.5rem;margin-bottom:10px}
+  /* Settings modal */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center}
+  .modal-bg.show{display:flex}
+  .modal{background:#16213e;border-radius:14px;padding:26px;width:380px;max-width:92vw;color:#eee}
+  .modal h3{font-size:1rem;margin-bottom:16px;color:#e84545}
+  .frow{margin-bottom:12px}
+  .frow label{font-size:.8rem;color:#aaa;display:block;margin-bottom:3px}
+  .frow input{width:100%;background:#0f3460;border:1px solid #333;border-radius:7px;padding:8px 12px;color:#eee;font-size:.9rem;outline:none}
+  .frow input:focus{border-color:#e84545}
+  .mrow{display:flex;gap:8px;margin-top:16px}
+  .mrow button{flex:1;border:none;border-radius:8px;padding:9px;font-size:.88rem;font-weight:700;cursor:pointer}
+  .sync-bar{background:#16213e;padding:7px 20px;font-size:.78rem;color:#888;border-bottom:1px solid #222}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>👨‍🍳 จอครัว</h1>
+  <div class="header-right">
+    <span><span class="dot"></span><span id="sync-status" style="font-size:.8rem;color:#27ae60">กำลังเชื่อมต่อ…</span></span>
+    <span class="clock" id="clock"></span>
+    <button onclick="openSettings()" style="background:#333;color:#ccc;border:none;border-radius:7px;padding:6px 12px;cursor:pointer;font-size:.8rem">⚙️</button>
+  </div>
+</header>
+
+<nav>
+  <a href="index.html">🏠 จัดการโต๊ะ</a>
+  <a href="kitchen.html" class="active">👨‍🍳 ห้องครัว</a>
+  <a href="admin.html">🧾 แคชเชียร์</a>
+</nav>
+
+<div class="sync-bar" id="sync-bar">ซิงค์ล่าสุด: —</div>
+
+<div class="counters">
+  <span class="c-p"><strong id="cp">0</strong>รอทำ</span>
+  <span class="c-r"><strong id="cr">0</strong>กำลังทำ</span>
+  <span class="c-d"><strong id="cd">0</strong>เสร็จแล้ว</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="setTab('all',this)">ทั้งหมด</div>
+  <div class="tab" onclick="setTab('pending',this)">รอทำ</div>
+  <div class="tab" onclick="setTab('preparing',this)">กำลังทำ</div>
+  <div class="tab" onclick="setTab('done',this)">เสร็จแล้ว</div>
+</div>
+
+<div class="board" id="board"></div>
+
+<!-- Settings modal -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal">
+    <h3>⚙️ ตั้งค่า GitHub Storage</h3>
+    <div class="frow"><label>GitHub Username</label><input type="text" id="s-user"></div>
+    <div class="frow"><label>Repository Name</label><input type="text" id="s-repo"></div>
+    <div class="frow"><label>Personal Access Token</label><input type="password" id="s-token"></div>
+    <div class="mrow">
+      <button onclick="saveSettings()" style="background:#e84545;color:white">บันทึก</button>
+      <button onclick="document.getElementById('settings-modal').classList.remove('show')" style="background:#444;color:#ccc">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentTab = 'all';
+let prevPendingCount = -1;
+
+function setTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  render([]);  // clear first
+  fetchAndRender();
+}
+
+async function fetchAndRender() {
+  if (!DB.isReady()) {
+    document.getElementById('sync-status').textContent = '❌ ยังไม่ได้ตั้งค่า';
+    document.getElementById('sync-status').style.color = '#e84545';
+    return;
+  }
+  try {
+    const orders = await DB.getOrders();
+    render(orders);
+    document.getElementById('sync-bar').textContent =
+      'ซิงค์ล่าสุด: ' + new Date().toLocaleTimeString('th-TH');
+    document.getElementById('sync-status').textContent = 'Live';
+    document.getElementById('sync-status').style.color = '#27ae60';
+  } catch(e) {
+    document.getElementById('sync-status').textContent = '❌ ' + e.message;
+    document.getElementById('sync-status').style.color = '#e84545';
+  }
+}
+
+function render(all) {
+  all = all.sort((a,b) => a.timestamp - b.timestamp);
+  const pending = all.filter(o => o.status==='pending');
+  const preparing = all.filter(o => o.status==='preparing');
+  const done = all.filter(o => o.status==='done');
+
+  document.getElementById('cp').textContent = pending.length;
+  document.getElementById('cr').textContent = preparing.length;
+  document.getElementById('cd').textContent = done.length;
+
+  // New order notification
+  if (prevPendingCount >= 0 && pending.length > prevPendingCount) {
+    document.title = `🔔 ออเดอร์ใหม่ ${pending.length} รายการ — ห้องครัว`;
+    setTimeout(() => document.title='👨‍🍳 จอครัว', 3000);
+  }
+  prevPendingCount = pending.length;
+
+  let list = all;
+  if (currentTab==='pending') list = pending;
+  else if (currentTab==='preparing') list = preparing;
+  else if (currentTab==='done') list = done;
+
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  if (list.length === 0) {
+    board.innerHTML = `<div class="empty"><div class="icon">🍳</div><p>ไม่มีออเดอร์ในหมวดนี้</p></div>`;
+    return;
+  }
+
+  list.forEach(order => {
+    const card = document.createElement('div');
+    card.className = `order-card ${order.status}`;
+    const acts = order.status==='pending'
+      ? `<button class="btn-prep" onclick="act('${order.id}','preparing')">🔥 เริ่มทำ</button>
+         <button class="btn-del" onclick="act('${order.id}','delete')">✕</button>`
+      : order.status==='preparing'
+      ? `<button class="btn-done" onclick="act('${order.id}','done')">✅ เสร็จ</button>
+         <button class="btn-del" onclick="act('${order.id}','delete')">✕</button>`
+      : `<button class="btn-del" onclick="act('${order.id}','delete')" style="flex:1">🗑️ ลบ</button>`;
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="tbl">โต๊ะ ${order.table}</div>
+        <span class="otime">${order.time} · ฿${order.total.toLocaleString()}</span>
+      </div>
+      <div class="item-list">
+        ${order.items.map(i=>`<div class="irow"><span><span class="iqty">x${i.qty}</span>${i.emoji} ${i.name}</span><span style="color:#aaa">฿${(i.price*i.qty).toLocaleString()}</span></div>`).join('')}
+      </div>
+      ${order.note ? `<div class="note">📝 ${order.note}</div>` : ''}
+      <div class="acts">${acts}</div>`;
+    board.appendChild(card);
+  });
+}
+
+async function act(id, action) {
+  if (!DB.isReady()) return alert('ยังไม่ได้ตั้งค่า GitHub');
+  try {
+    if (action === 'delete') {
+      await DB.deleteOrder(id);
+    } else {
+      await DB.patchOrder(id, {status: action});
+    }
+    await fetchAndRender();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+function openSettings() {
+  const c = DB.cfg();
+  document.getElementById('s-user').value = c.user;
+  document.getElementById('s-repo').value = c.repo;
+  document.getElementById('s-token').value = c.token;
+  document.getElementById('settings-modal').classList.add('show');
+}
+
+function saveSettings() {
+  DB.saveConfig(
+    document.getElementById('s-user').value,
+    document.getElementById('s-repo').value,
+    document.getElementById('s-token').value
+  );
+  document.getElementById('settings-modal').classList.remove('show');
+  fetchAndRender();
+}
+
+// Clock
+setInterval(() => {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('th-TH');
+}, 1000);
+document.getElementById('clock').textContent = new Date().toLocaleTimeString('th-TH');
+
+// Poll every 6 seconds
+fetchAndRender();
+setInterval(fetchAndRender, 6000);
+</script>
+</body>
+</html>
