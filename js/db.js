@@ -120,11 +120,12 @@ const DB = (() => {
     const tableOrders = orders.filter(o => String(o.table) === String(tableNum));
     if (tableOrders.length === 0) throw new Error('ไม่มีออเดอร์ในโต๊ะนี้');
 
+    const foodOrders = tableOrders.filter(o => !o.type);
     const session = {
       id: 'sale_' + Date.now(),
       table: tableNum,
-      orders: tableOrders,
-      total: tableOrders.reduce((s, o) => s + o.total, 0),
+      orders: foodOrders,
+      total: foodOrders.reduce((s, o) => s + (o.total || 0), 0),
       paidAt: new Date().toLocaleString('th-TH'),
       timestamp: Date.now()
     };

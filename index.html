@@ -4,68 +4,78 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>จัดการโต๊ะ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="js/db.js"></script>
 <style>
-:root{--red:#C41E3A;--dark:#1C1C1E;--bg:#F2F2F7;--card:#FFF;--sub:#8E8E93;--green:#34C759;--orange:#FF9500;--yellow:#FFCC00}
+:root{
+  --red:#DC2626;--dark:#1A1A2E;--bg:#F8F7FF;
+  --card:#FFF;--sub:#64748B;--green:#059669;
+  --shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.04);
+  --shadow-hover:0 8px 28px rgba(0,0,0,.11);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--dark)}
+body{font-family:'Noto Sans Thai',-apple-system,sans-serif;background:var(--bg);color:var(--dark);-webkit-font-smoothing:antialiased}
 
-header{background:var(--dark);color:white;padding:18px 20px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:1.2rem;font-weight:800;letter-spacing:.3px}
-.logo span{color:#FF453A}
+/* ── HEADER ── */
+header{background:var(--dark);color:white;padding:16px 22px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.2rem;font-weight:800;letter-spacing:-.2px}
+.logo span{color:#FF6B6B}
 header nav{display:flex;gap:6px}
-nav a{color:rgba(255,255,255,.55);text-decoration:none;font-size:.78rem;padding:6px 12px;border-radius:8px;transition:all .2s}
+nav a{color:rgba(255,255,255,.45);text-decoration:none;font-size:.78rem;padding:0 14px;height:36px;display:inline-flex;align-items:center;border-radius:99px;transition:background .2s,color .2s}
 nav a:hover,nav a.active{background:rgba(255,255,255,.12);color:white}
-nav a.active{color:#FF453A}
+nav a.active{color:#FF6B6B}
 
-/* Status bar */
-.status-bar{padding:10px 20px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:7px}
-.status-bar.ok{background:#D1FAE5;color:#065F46}
-.status-bar.err{background:#FEE2E2;color:#991B1B}
-.status-bar.warn{background:#FEF3C7;color:#92400E}
-.status-dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+/* ── STATUS BAR ── */
+.status-bar{padding:11px 22px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:8px}
+.status-bar.ok{background:#ECFDF5;color:#065F46;border-bottom:1px solid #A7F3D0}
+.status-bar.err{background:#FEF2F2;color:#991B1B;border-bottom:1px solid #FECACA}
+.status-bar.warn{background:#FFFBEB;color:#92400E;border-bottom:1px solid #FDE68A}
+.status-dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block;flex-shrink:0}
 
-.container{max-width:1000px;margin:0 auto;padding:20px 16px}
+.container{max-width:1040px;margin:0 auto;padding:22px 18px}
 
-/* Config card */
-.config-card{background:var(--card);border-radius:16px;padding:18px 20px;margin-bottom:18px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
-.config-card h2{font-size:.8rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px}
-.cfg-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.cfg-row label{font-size:.82rem;color:var(--sub);min-width:60px}
-input[type=text],input[type=password]{background:#F2F2F7;border:1.5px solid transparent;border-radius:10px;padding:8px 12px;font-size:.88rem;outline:none;color:var(--dark);transition:border .2s}
-input:focus{border-color:var(--red);background:white}
-.btn{border:none;border-radius:10px;padding:9px 16px;font-size:.83rem;font-weight:700;cursor:pointer;transition:background .2s}
-.btn-red{background:var(--red);color:white}.btn-red:hover{background:#991B1B}
-.btn-dark{background:var(--dark);color:white}.btn-dark:hover{background:#3A3A3C}
-.btn-gray{background:#E5E5EA;color:var(--dark)}.btn-gray:hover{background:#D1D1D6}
-.btn-green{background:var(--green);color:white}
+/* ── CONFIG CARD ── */
+.config-card{background:var(--card);border-radius:20px;padding:20px 22px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid #EEEBF8}
+.config-card h2{font-size:.7rem;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.9px;margin-bottom:16px}
+.cfg-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cfg-row label{font-size:.82rem;color:var(--sub);min-width:72px;font-weight:600}
+input[type=text],input[type=password]{background:#F8F9FA;border:1.5px solid #E9ECEF;border-radius:12px;padding:10px 14px;font-size:.88rem;outline:none;color:var(--dark);transition:border .2s,background .2s;font-family:inherit;min-height:46px}
+input:focus{border-color:var(--red);background:white;box-shadow:0 0 0 3px rgba(220,38,38,.08)}
+.btn{border:none;border-radius:12px;padding:0 18px;min-height:46px;font-size:.84rem;font-weight:700;cursor:pointer;transition:background .2s,box-shadow .2s;font-family:inherit}
+.btn-red{background:var(--red);color:white;box-shadow:0 3px 10px rgba(220,38,38,.25)}.btn-red:hover{background:#B91C1C;box-shadow:0 4px 14px rgba(220,38,38,.35)}
+.btn-dark{background:var(--dark);color:white}.btn-dark:hover{background:#2D2D4E}
+.btn-gray{background:#F3F4F6;color:#374151}.btn-gray:hover{background:#E5E7EB}
+.btn-green{background:var(--green);color:white}.btn-green:hover{background:#047857}
 
-/* Tables section */
-.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.section-header h2{font-size:1rem;font-weight:800}
+/* ── SECTION HEADER ── */
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.section-header h2{font-size:1.05rem;font-weight:900;letter-spacing:-.2px}
 .section-header small{font-size:.75rem;color:var(--sub)}
 
-.table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
-.tbl-card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.07);border:2px solid transparent;transition:border .3s;cursor:pointer}
-.tbl-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12)}
-.tbl-card.available{border-color:#D1FAE5}
-.tbl-card.occupied{border-color:#FED7AA}
+/* ── TABLE GRID ── */
+.table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px}
+.tbl-card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);border:2px solid transparent;transition:border .25s,box-shadow .25s,transform .2s;cursor:pointer}
+.tbl-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-3px)}
+.tbl-card.available{border-color:#A7F3D0}
+.tbl-card.occupied{border-color:#FCD34D}
 .tbl-card.bill{border-color:#FCA5A5;animation:pulse-border 1.5s infinite}
 @keyframes pulse-border{0%,100%{border-color:#FCA5A5}50%{border-color:var(--red)}}
 
-.tbl-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.tbl-num{font-size:1.5rem;font-weight:900;color:var(--dark)}
-.status-pill{font-size:.68rem;font-weight:800;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px}
+.tbl-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.tbl-num{font-size:1.8rem;font-weight:900;color:var(--dark);line-height:1}
+.status-pill{font-size:.65rem;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px}
 .sp-available{background:#D1FAE5;color:#065F46}
 .sp-occupied{background:#FEF3C7;color:#92400E}
 .sp-bill{background:#FEE2E2;color:var(--red)}
 
-.qr-area{display:flex;justify-content:center;margin-bottom:10px;min-height:100px;align-items:center}
-.qr-placeholder{width:100px;height:100px;background:#F2F2F7;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#C7C7CC;font-size:.75rem;text-align:center;padding:8px}
+.qr-area{display:flex;justify-content:center;margin-bottom:12px;min-height:108px;align-items:center}
+.qr-placeholder{width:108px;height:108px;background:#F3F4F6;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:.72rem;text-align:center;padding:10px}
 
 .tbl-footer{font-size:.72rem;color:var(--sub);text-align:center}
-.order-count{color:var(--red);font-weight:700}
+.order-count{color:var(--red);font-weight:800}
 
 /* Print */
 @media print{
@@ -73,6 +83,9 @@ input:focus{border-color:var(--red);background:white}
   .tbl-card{page-break-inside:avoid;box-shadow:none;border:1px solid #ddd}
   body{background:white}
   .tbl-footer{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 </style>
 </head>
@@ -159,6 +172,7 @@ function buildQRUrl(table) {
 function getTableStatus(tableNum) {
   const tOrders = orders.filter(o => String(o.table) === String(tableNum));
   if (!tOrders.length) return 'available';
+  if (tOrders.some(o => o.type === 'payment_claimed')) return 'bill';
   if (tOrders.some(o => o.type === 'bill_request')) return 'bill';
   return 'occupied';
 }
@@ -169,7 +183,7 @@ function buildGrid() {
 
   for (let i = 1; i <= TOTAL_TABLES; i++) {
     const status = getTableStatus(i);
-    const tOrders = orders.filter(o => String(o.table) === String(i) && o.type !== 'bill_request');
+    const tOrders = orders.filter(o => String(o.table) === String(i) && !o.type);
     const hasBill = orders.some(o => String(o.table) === String(i) && o.type === 'bill_request');
 
     const statusLabel = status === 'available' ? 'ว่าง' : status === 'bill' ? 'รอชำระ' : 'มีลูกค้า';

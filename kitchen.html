@@ -4,100 +4,206 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ห้องครัว</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <script src="js/db.js"></script>
 <style>
-:root{--red:#C41E3A;--orange:#FF9500;--green:#34C759;--blue:#0A84FF;--dark:#1C1C1E;--bg:#000;--card:#1C1C1E;--card2:#2C2C2E;--sub:#8E8E93;--border:#3A3A3C}
+:root{
+  --red:#FF453A;--orange:#FF9F0A;--green:#30D158;--dark:#1C1C1E;
+  --bg:#0D0D0F;--card:#1C1C1E;--card2:#2C2C2E;--card3:#3A3A3C;
+  --sub:#8E8E93;--border:rgba(255,255,255,.08);
+  --shadow-card:0 4px 20px rgba(0,0,0,.4);
+  --radius:20px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:white;min-height:100vh}
+body{font-family:'Noto Sans Thai',-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:white;min-height:100vh}
 
-header{background:#111;border-bottom:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:1.1rem;font-weight:800;color:white}.logo em{color:var(--red);font-style:normal}
-.header-right{display:flex;align-items:center;gap:12px}
-.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.clock{font-size:.88rem;color:var(--sub);font-variant-numeric:tabular-nums}
-nav{background:#111;border-bottom:1px solid var(--border);display:flex}
-nav a{color:var(--sub);text-decoration:none;padding:10px 18px;font-size:.8rem;transition:all .2s;border-bottom:2px solid transparent}
-nav a:hover{color:white}
+/* ── HEADER ── */
+header{
+  background:rgba(28,28,30,.95);
+  border-bottom:1px solid var(--border);
+  padding:0 20px;height:56px;
+  display:flex;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(16px);position:sticky;top:0;z-index:90;
+}
+.logo{font-size:1.05rem;font-weight:800;color:white;display:flex;align-items:center;gap:8px}
+.logo-icon{font-size:1.3rem}
+.header-right{display:flex;align-items:center;gap:10px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--green)}50%{opacity:.5;box-shadow:0 0 12px var(--green)}}
+.clock{font-size:.85rem;color:var(--sub);font-variant-numeric:tabular-nums;background:var(--card2);padding:5px 10px;border-radius:8px}
+.settings-btn{background:var(--card2);color:var(--sub);border:1px solid var(--border);border-radius:10px;padding:0 12px;height:36px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;gap:4px;transition:background .2s}
+.settings-btn:hover{background:var(--card3);color:white}
+
+/* ── NAV ── */
+nav{background:rgba(17,17,19,.95);border-bottom:1px solid var(--border);display:flex;backdrop-filter:blur(8px)}
+nav a{color:var(--sub);text-decoration:none;padding:0 18px;height:44px;display:inline-flex;align-items:center;font-size:.8rem;font-weight:600;transition:color .2s;border-bottom:2px solid transparent}
+nav a:hover{color:rgba(255,255,255,.7)}
 nav a.active{color:var(--red);border-color:var(--red)}
 
-/* Stats bar */
-.stats{display:flex;background:#111;border-bottom:1px solid var(--border);padding:12px 20px;gap:24px}
-.stat{display:flex;flex-direction:column;gap:2px}
-.stat-val{font-size:1.4rem;font-weight:800}
-.stat-label{font-size:.7rem;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
-.c-pending{color:var(--red)}.c-prep{color:var(--orange)}.c-done{color:var(--green)}
+/* ── STATS BAR ── */
+.stats{
+  display:flex;
+  background:rgba(28,28,30,.8);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;gap:0;
+}
+.stat{
+  display:flex;flex-direction:column;gap:3px;
+  padding:0 20px;border-right:1px solid var(--border);
+}
+.stat:first-child{padding-left:0}
+.stat:last-child{border-right:none;margin-left:auto;padding-right:0}
+.stat-val{font-size:1.6rem;font-weight:900;line-height:1}
+.stat-label{font-size:.65rem;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.c-pending{color:var(--red)}.c-prep{color:var(--orange)}.c-done{color:var(--green)}.c-bill{color:#FF6B6B}
 
-/* Tabs */
-.tabs{display:flex;background:#111;border-bottom:1px solid var(--border);padding:0 16px;gap:4px}
-.tab{padding:10px 16px;font-size:.82rem;font-weight:700;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;user-select:none}
-.tab:hover{color:white}
+/* ── TABS ── */
+.tabs{display:flex;background:rgba(17,17,19,.9);border-bottom:1px solid var(--border);padding:0 16px;gap:0;overflow-x:auto}
+.tab{
+  padding:0 18px;height:44px;display:inline-flex;align-items:center;gap:6px;
+  font-size:.8rem;font-weight:700;color:var(--sub);cursor:pointer;
+  border-bottom:2px solid transparent;transition:color .2s;user-select:none;white-space:nowrap;
+}
+.tab:hover{color:rgba(255,255,255,.7)}
 .tab.active{color:white;border-color:white}
+.tab-count{
+  font-size:.65rem;font-weight:800;padding:1px 6px;border-radius:6px;
+  background:rgba(255,255,255,.12);color:rgba(255,255,255,.5);
+}
+.tab.active .tab-count{background:rgba(255,255,255,.2);color:white}
 
-/* Sync bar */
-.sync-bar{background:#111;padding:6px 20px;font-size:.72rem;color:var(--sub);border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+/* ── SYNC BAR ── */
+.sync-bar{
+  background:rgba(28,28,30,.6);padding:6px 20px;
+  font-size:.7rem;color:var(--sub);border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
 #sync-status{font-weight:700}
 #sync-status.ok{color:var(--green)}
 #sync-status.err{color:var(--red)}
 
-/* Board */
-.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding:16px}
+/* ── BOARD ── */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;padding:18px}
 
-/* Bill request card — prominent */
-.order-card.bill-card{border:2px solid var(--red);background:#2A0A0E;animation:blink-card 1.5s infinite}
-@keyframes blink-card{0%,100%{border-color:var(--red)}50%{border-color:#FF453A;box-shadow:0 0 16px rgba(196,30,58,.4)}}
-.order-card{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--border);transition:transform .2s}
-.order-card.preparing{border-color:var(--orange)}
-.order-card.done{border-color:var(--border);opacity:.5}
+/* ── ORDER CARDS ── */
+.order-card{
+  background:var(--card);border-radius:var(--radius);padding:16px;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow-card);
+  transition:transform .2s,box-shadow .2s;
+}
+.order-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.order-card.preparing{border-color:rgba(255,159,10,.35);background:linear-gradient(160deg,#1C1C1E,#221A0A)}
+.order-card.done{opacity:.45;filter:grayscale(.3)}
+.order-card.bill-card{
+  border:2px solid rgba(255,69,58,.5);
+  background:linear-gradient(160deg,#200A0A,#1C1C1E);
+  animation:blink-card 1.8s infinite;
+}
+@keyframes blink-card{
+  0%,100%{border-color:rgba(255,69,58,.5);box-shadow:0 0 0 rgba(255,69,58,0)}
+  50%{border-color:var(--red);box-shadow:0 0 20px rgba(255,69,58,.25)}
+}
 
-.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
-.tbl-badge{font-size:1rem;font-weight:900;padding:4px 14px;border-radius:8px;letter-spacing:.3px}
-.tb-pending{background:var(--red);color:white}
-.tb-preparing{background:var(--orange);color:white}
-.tb-done{background:#3A3A3C;color:var(--sub)}
-.tb-bill{background:var(--red);color:white}
-.otime{font-size:.72rem;color:var(--sub)}
+/* ── CARD HEADER ── */
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tbl-badge{
+  font-size:.95rem;font-weight:900;padding:5px 14px;
+  border-radius:10px;letter-spacing:.2px;display:flex;align-items:center;gap:5px;
+}
+.tb-pending{background:rgba(255,69,58,.2);color:var(--red);border:1px solid rgba(255,69,58,.3)}
+.tb-preparing{background:rgba(255,159,10,.2);color:var(--orange);border:1px solid rgba(255,159,10,.3)}
+.tb-done{background:rgba(255,255,255,.07);color:var(--sub);border:1px solid var(--border)}
+.tb-bill{background:rgba(255,69,58,.25);color:var(--red);border:1px solid rgba(255,69,58,.4)}
+.otime{font-size:.7rem;color:var(--sub);background:rgba(255,255,255,.05);padding:4px 8px;border-radius:6px}
 
-.item-list{margin-bottom:11px}
-.irow{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:.84rem;color:rgba(255,255,255,.8)}
+/* ── ITEMS ── */
+.item-list{margin-bottom:12px;background:rgba(0,0,0,.2);border-radius:12px;overflow:hidden}
+.irow{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:.84rem;color:rgba(255,255,255,.85);
+}
 .irow:last-child{border:none}
-.iqty{background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);font-size:.7rem;font-weight:700;padding:1px 6px;border-radius:4px;margin-right:6px}
-.note-box{background:rgba(255,204,0,.08);border:1px solid rgba(255,204,0,.2);border-radius:8px;padding:6px 10px;font-size:.78rem;color:#FFCC00;margin-bottom:10px}
+.irow-left{display:flex;align-items:center;gap:6px}
+.iqty{
+  background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);
+  font-size:.68rem;font-weight:800;padding:2px 7px;border-radius:5px;
+}
+.iprice{color:var(--sub);font-size:.78rem}
 
-.bill-notice{text-align:center;padding:10px 0;font-size:.92rem;font-weight:800;color:var(--red)}
+.note-box{
+  background:rgba(255,204,0,.07);border:1px solid rgba(255,204,0,.18);
+  border-radius:10px;padding:8px 12px;font-size:.78rem;color:#FFD60A;
+  margin-bottom:12px;display:flex;align-items:flex-start;gap:6px;
+}
 
-.acts{display:flex;gap:7px}
-.act-btn{flex:1;border:none;border-radius:9px;padding:9px;font-size:.8rem;font-weight:800;cursor:pointer;transition:opacity .2s}
-.act-btn:hover{opacity:.85}
-.ab-prep{background:var(--orange);color:white}
-.ab-done{background:var(--green);color:white}
-.ab-del{background:var(--card2);color:var(--sub)}
+.bill-notice{
+  text-align:center;padding:14px 0 10px;
+  font-size:1rem;font-weight:800;color:var(--red);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.bill-notice small{font-size:.72rem;color:var(--sub);font-weight:400}
+
+/* ── ACTION BUTTONS ── */
+.acts{display:flex;gap:8px;margin-top:2px}
+.act-btn{
+  flex:1;border:none;border-radius:12px;min-height:44px;
+  font-size:.82rem;font-weight:800;cursor:pointer;
+  transition:filter .15s,transform .1s;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.act-btn:hover{filter:brightness(1.15)}
+.act-btn:active{transform:scale(.97)}
+.ab-prep{background:linear-gradient(135deg,var(--orange),#E8880A);color:white;box-shadow:0 3px 12px rgba(255,159,10,.3)}
+.ab-done{background:linear-gradient(135deg,var(--green),#28BC50);color:white;box-shadow:0 3px 12px rgba(48,209,88,.3)}
+.ab-del{background:rgba(255,255,255,.07);color:var(--sub);border:1px solid var(--border)}
 
 .empty{text-align:center;padding:80px 20px;color:var(--sub);grid-column:1/-1}
-.empty .icon{font-size:3.5rem;margin-bottom:12px}
+.empty .icon{font-size:3.5rem;margin-bottom:14px;display:block;opacity:.5}
+.empty p{font-size:.9rem}
 
-/* Settings modal */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+/* ── SETTINGS MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
 .modal-bg.show{display:flex}
-.modal{background:#2C2C2E;border-radius:16px;padding:24px;width:360px;max-width:94vw;border:1px solid var(--border)}
-.modal h3{font-size:.95rem;font-weight:800;color:white;margin-bottom:16px}
-.frow{margin-bottom:11px}
-.frow label{font-size:.75rem;color:var(--sub);display:block;margin-bottom:4px;font-weight:600}
-.frow input{width:100%;background:#1C1C1E;border:1px solid var(--border);border-radius:9px;padding:8px 12px;color:white;font-size:.88rem;outline:none}
-.frow input:focus{border-color:var(--red)}
-.mrow{display:flex;gap:8px;margin-top:14px}
-.mrow button{flex:1;border:none;border-radius:9px;padding:10px;font-size:.85rem;font-weight:700;cursor:pointer}
+.modal{background:#1C1C1E;border-radius:22px;padding:26px;width:360px;max-width:94vw;border:1px solid rgba(255,255,255,.1);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal h3{font-size:.9rem;font-weight:800;color:white;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.frow{margin-bottom:12px}
+.frow label{font-size:.68rem;font-weight:800;color:var(--sub);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.6px}
+.frow input{
+  width:100%;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:11px;padding:10px 14px;color:white;font-size:.88rem;outline:none;
+  font-family:inherit;transition:border .2s,background .2s;
+}
+.frow input:focus{border-color:var(--red);background:rgba(255,255,255,.07)}
+.mrow{display:flex;gap:8px;margin-top:18px}
+.mrow button{
+  flex:1;border:none;border-radius:12px;min-height:46px;
+  font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:filter .15s;
+}
+.mrow button:hover{filter:brightness(1.1)}
+
+@media(max-width:600px){
+  .stats{gap:12px;flex-wrap:wrap}
+  .stat{padding:0 12px}
+  .board{grid-template-columns:1fr;padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo"><em>👨‍🍳</em> จอครัว</div>
+  <div class="logo"><span class="logo-icon">👨‍🍳</span> จอครัว</div>
   <div class="header-right">
     <span class="live-dot"></span>
-    <span id="sync-status" class="ok">Live</span>
+    <span id="sync-status" class="ok" style="font-size:.78rem;font-weight:700">Live</span>
     <span class="clock" id="clock">00:00:00</span>
-    <button onclick="openSettings()" style="background:#2C2C2E;color:#aaa;border:1px solid #3A3A3C;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:.8rem">⚙️</button>
+    <button class="settings-btn" onclick="openSettings()">⚙️ ตั้งค่า</button>
   </div>
 </header>
 
@@ -111,15 +217,15 @@ nav a.active{color:var(--red);border-color:var(--red)}
   <div class="stat"><span class="stat-val c-pending" id="cp">0</span><span class="stat-label">รอทำ</span></div>
   <div class="stat"><span class="stat-val c-prep" id="cr">0</span><span class="stat-label">กำลังทำ</span></div>
   <div class="stat"><span class="stat-val c-done" id="cd">0</span><span class="stat-label">เสร็จแล้ว</span></div>
-  <div class="stat" style="margin-left:auto"><span class="stat-val" style="color:#FF453A" id="cb">0</span><span class="stat-label">รอชำระเงิน</span></div>
+  <div class="stat"><span class="stat-val c-bill" id="cb">0</span><span class="stat-label">รอชำระเงิน</span></div>
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="setTab('all',this)">ทั้งหมด</div>
-  <div class="tab" onclick="setTab('pending',this)">รอทำ</div>
-  <div class="tab" onclick="setTab('preparing',this)">กำลังทำ</div>
-  <div class="tab" onclick="setTab('done',this)">เสร็จ</div>
-  <div class="tab" onclick="setTab('bill_request',this)">💰 รอชำระ</div>
+  <div class="tab active" onclick="setTab('all',this)">ทั้งหมด <span class="tab-count" id="tc-all">0</span></div>
+  <div class="tab" onclick="setTab('pending',this)">รอทำ <span class="tab-count" id="tc-pending">0</span></div>
+  <div class="tab" onclick="setTab('preparing',this)">กำลังทำ <span class="tab-count" id="tc-prep">0</span></div>
+  <div class="tab" onclick="setTab('done',this)">เสร็จ <span class="tab-count" id="tc-done">0</span></div>
+  <div class="tab" onclick="setTab('bill_request',this)">💰 รอชำระ <span class="tab-count" id="tc-bill">0</span></div>
 </div>
 
 <div class="sync-bar"><span>ซิงค์ล่าสุด: <span id="last-sync">—</span></span></div>
@@ -179,12 +285,16 @@ function renderBoard(all) {
   document.getElementById('cd').textContent = done.length;
   document.getElementById('cb').textContent = bills.length;
 
+  const allCount = bills.length + pending.length + preparing.length + done.length;
+  document.getElementById('tc-all').textContent = allCount;
+  document.getElementById('tc-pending').textContent = pending.length;
+  document.getElementById('tc-prep').textContent = preparing.length;
+  document.getElementById('tc-done').textContent = done.length;
+  document.getElementById('tc-bill').textContent = bills.length;
+
   if (prevPending >= 0 && pending.length > prevPending) {
     document.title = `🔔 ออเดอร์ใหม่ (${pending.length}) — ห้องครัว`;
     setTimeout(() => document.title = '👨‍🍳 ห้องครัว', 4000);
-  }
-  if (bills.length > 0 && prevPending >= 0) {
-    // Flash title for bill requests too
   }
   prevPending = pending.length;
 
@@ -198,7 +308,7 @@ function renderBoard(all) {
   const board = document.getElementById('board');
   board.innerHTML = '';
   if (!list.length) {
-    board.innerHTML = '<div class="empty"><div class="icon">🍳</div><p>ไม่มีออเดอร์ในหมวดนี้</p></div>';
+    board.innerHTML = '<div class="empty"><span class="icon">🍳</span><p>ไม่มีออเดอร์ในหมวดนี้</p></div>';
     return;
   }
 
@@ -213,19 +323,20 @@ function renderBoard(all) {
           <span class="tbl-badge tb-bill">🔔 โต๊ะ ${order.table}</span>
           <span class="otime">${order.time}</span>
         </div>
-        <div class="bill-notice">💰 ลูกค้าเรียกเก็บเงินแล้ว!</div>
+        <div class="bill-notice">💰 ลูกค้าเรียกเก็บเงินแล้ว!<small>กรุณาแจ้งแคชเชียร์</small></div>
         <div class="acts">
-          <button class="act-btn ab-del" onclick="act('${order.id}','delete')">✕ ลบ</button>
+          <button class="act-btn ab-del" onclick="act('${order.id}','delete')">✕ รับทราบ</button>
         </div>`;
     } else {
       const badgeClass = order.status === 'pending' ? 'tb-pending' : order.status === 'preparing' ? 'tb-preparing' : 'tb-done';
+      const statusLabel = order.status === 'pending' ? '🔴 รอทำ' : order.status === 'preparing' ? '🟠 กำลังทำ' : '🟢 เสร็จ';
       const acts = order.status === 'pending'
         ? `<button class="act-btn ab-prep" onclick="act('${order.id}','preparing')">🔥 เริ่มทำ</button>
-           <button class="act-btn ab-del" onclick="act('${order.id}','delete')">✕</button>`
+           <button class="act-btn ab-del" onclick="act('${order.id}','delete')" style="flex:0;padding:0 14px">✕</button>`
         : order.status === 'preparing'
-        ? `<button class="act-btn ab-done" onclick="act('${order.id}','done')">✅ เสร็จ</button>
-           <button class="act-btn ab-del" onclick="act('${order.id}','delete')">✕</button>`
-        : `<button class="act-btn ab-del" onclick="act('${order.id}','delete')" style="flex:1">🗑️ ลบ</button>`;
+        ? `<button class="act-btn ab-done" onclick="act('${order.id}','done')">✅ เสร็จแล้ว</button>
+           <button class="act-btn ab-del" onclick="act('${order.id}','delete')" style="flex:0;padding:0 14px">✕</button>`
+        : `<button class="act-btn ab-del" onclick="act('${order.id}','delete')">🗑️ ลบออก</button>`;
 
       card.innerHTML = `
         <div class="card-top">
@@ -233,9 +344,13 @@ function renderBoard(all) {
           <span class="otime">${order.time} · ฿${order.total?.toLocaleString()}</span>
         </div>
         <div class="item-list">
-          ${order.items.map(i => `<div class="irow"><span><span class="iqty">×${i.qty}</span>${i.emoji || ''} ${i.name}</span><span style="color:#8E8E93">฿${(i.price*i.qty).toLocaleString()}</span></div>`).join('')}
+          ${order.items.map(i => `
+            <div class="irow">
+              <div class="irow-left"><span class="iqty">×${i.qty}</span>${i.emoji || ''} ${i.name}</div>
+              <span class="iprice">฿${(i.price*i.qty).toLocaleString()}</span>
+            </div>`).join('')}
         </div>
-        ${order.note ? `<div class="note-box">📝 ${order.note}</div>` : ''}
+        ${order.note ? `<div class="note-box">📝 <span>${order.note}</span></div>` : ''}
         <div class="acts">${acts}</div>`;
     }
     board.appendChild(card);
